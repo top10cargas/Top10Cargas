@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Top10Cargas | top10cargas.com - Transportes & Logística Rodoviária e Aérea no Brasil</title>
+  <meta name="description" content="Top10Cargas.com - Top10Cargas. Entregas rodoviárias e frete aéreo expresso para todos os estados do Brasil. Cotação personalizada com análise técnica em tempo real em Reais (R$).">
+  <link rel="canonical" href="https://top10cargas.com">
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            wine: {
+              50: '#fff1f2',
+              100: '#ffe4e6',
+              200: '#fecdd3',
+              300: '#fda4af',
+              600: '#e11d48',
+              700: '#be123c',
+              800: '#9f1239',
+              900: '#881337',
+              950: '#4c0519',
+              dark: '#36020f'
+            },
+            yellowbrand: {
+              50: '#fefce8',
+              100: '#fef9c3',
+              200: '#fef08a',
+              300: '#fde047',
+              400: '#facc15',
+              500: '#eab308',
+              600: '#ca8a04',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-stone-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <header class="bg-white/95 backdrop-blur-md border-b border-wine-100 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-2 flex items-center justify-between">
+      
+      <!-- LOGOTIPO EXCLUSIVO: CAIXA COM TOP10 ESCRITO E FLECHA CIRCULANDO -->
+      <div class="flex items-center gap-3 cursor-pointer" onclick="app.navigateTo('landing')">
+        <svg viewBox="0 0 120 120" class="w-12 h-12 flex-shrink-0" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="boxTopGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#9f1239" />
+              <stop offset="100%" stop-color="#881337" />
+            </linearGradient>
+            <linearGradient id="boxLeftGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#881337" />
+              <stop offset="100%" stop-color="#700e2b" />
+            </linearGradient>
+            <linearGradient id="boxRightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#700e2b" />
+              <stop offset="100%" stop-color="#54071f" />
+            </linearGradient>
+            <linearGradient id="arrowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#fef08a" />
+              <stop offset="100%" stop-color="#facc15" />
+            </linearGradient>
+          </defs>
+
+          <!-- Flecha giratória (parte de trás da caixa) -->
+          <path d="M 22 45 C 16 26, 40 10, 72 12 C 96 14, 108 28, 106 46" 
+                stroke="#eab308" stroke-width="5" stroke-linecap="round" stroke-dasharray="70 8" opacity="0.6"/>
+
+          <!-- Sombra da Caixa -->
+          <ellipse cx="60" cy="98" rx="34" ry="10" fill="#000000" fill-opacity="0.25" />
+
+          <!-- Faces da Caixa 3D em Vermelho Vinho -->
+          <polygon points="60,32 94,48 60,64 26,48" fill="url(#boxTopGrad)" stroke="#facc15" stroke-width="1.5" stroke-linejoin="round"/>
+          <polygon points="26,48 60,64 60,94 26,78" fill="url(#boxLeftGrad)" stroke="#facc15" stroke-width="1.5" stroke-linejoin="round"/>
+          <polygon points="60,64 94,48 94,78 60,94" fill="url(#boxRightGrad)" stroke="#facc15" stroke-width="1.5" stroke-linejoin="round"/>
+
+          <!-- Fita da Caixa em Amarelo -->
+          <polygon points="56,34 64,38 64,64 56,64" fill="#facc15" fill-opacity="0.9" />
+          <polygon points="56,64 64,64 64,94 56,94" fill="#facc15" fill-opacity="0.9" />
+
+          <!-- Texto "Top10" gravado na lateral da caixa em Branco -->
+          <g transform="translate(43, 69) skewY(26) scale(0.95, 1.1)">
+            <text x="0" y="0" font-family="'Inter', sans-serif" font-weight="900" font-size="11.5" fill="#ffffff" text-anchor="middle" letter-spacing="-0.5">Top10</text>
+          </g>
+
+          <!-- Flecha giratória (frente da caixa) -->
+          <path d="M 106 46 C 104 68, 88 92, 58 98 C 34 102, 14 90, 12 72 C 10 56, 26 42, 42 38" 
+                stroke="url(#arrowGrad)" stroke-width="6.5" stroke-linecap="round"/>
+          <!-- Ponta da flecha amarela -->
+          <polygon points="46,30 46,46 32,38" fill="#facc15" stroke="#700e2b" stroke-width="1.5"/>
+        </svg>
+
+        <div>
+          <span class="text-2xl font-black tracking-tight text-wine-950">Top10<span class="text-wine-800">Cargas</span></span>
+          <span class="hidden sm:block text-[10px] uppercase tracking-widest text-stone-500 font-bold leading-none">top10cargas.com • Transporte Rodoviário & Aéreo no Brasil</span>
+        </div>
+      </div>
+
+      <!-- Links de Navegação Pública -->
+      <nav id="nav-links-public" class="hidden md:flex items-center gap-6 text-sm font-semibold text-stone-700">
+        <a href="#servicos" class="hover:text-wine-800 transition">Serviços</a>
+        <a href="#contato" onclick="app.handleNavContatoClick(event)" class="hover:text-wine-800 transition">Fale Conosco</a>
+      </nav>
+
+      <!-- Botões de Ação -->
+      <div class="flex items-center gap-3">
+        <!-- Notificações -->
+        <div class="relative" id="notifications-wrapper">
+          <button id="btn-notifications-toggle" class="relative p-2 rounded-lg text-stone-700 hover:bg-wine-50 transition">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span id="notif-badge-count" class="hidden absolute top-1 right-1 w-4 h-4 bg-wine-800 text-yellowbrand-300 text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
+          </button>
+          
+          <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-2xl border border-wine-100 z-50 overflow-hidden animate-fade-in">
+            <div class="p-3 bg-wine-950 text-white flex items-center justify-between border-b border-wine-800">
+              <span class="font-semibold text-sm flex items-center gap-1.5"><i data-lucide="bell" class="w-4 h-4 text-yellowbrand-400"></i> Notificações</span>
+              <button id="btn-mark-all-read" class="text-xs text-yellowbrand-300 hover:underline">Marcar como lidas</button>
+            </div>
+            <div id="notifications-list" class="max-h-72 overflow-y-auto divide-y divide-stone-100 p-1 text-xs"></div>
+          </div>
+        </div>
+
+        <!-- Visitante Não Autenticado -->
+        <div id="nav-auth-guest" class="flex items-center gap-2">
+          <button onclick="app.openAuthModal('login')" class="px-3.5 py-1.5 text-sm font-semibold text-stone-700 hover:text-wine-900 transition">
+            Entrar
+          </button>
+          <button onclick="app.openAuthModal('register')" class="px-4 py-2 text-sm font-bold text-white bg-wine-900 hover:bg-wine-800 rounded-xl shadow-sm shadow-wine-900/30 transition flex items-center gap-1.5 border border-wine-950">
+            <i data-lucide="user-plus" class="w-4 h-4 text-yellowbrand-400"></i> Criar Conta
+          </button>
+        </div>
+
+        <!-- Cliente Autenticado -->
+        <div id="nav-auth-client" class="hidden flex items-center gap-2">
+          <button onclick="app.navigateTo('client_dashboard')" class="px-3 py-1.5 text-sm font-semibold text-stone-700 hover:bg-wine-50 rounded-lg transition flex items-center gap-1.5">
+            <i data-lucide="package" class="w-4 h-4 text-wine-800"></i> Meus Envios
+          </button>
+          <button onclick="app.openClientChatTab()" class="px-3 py-1.5 text-sm font-semibold text-stone-700 hover:bg-wine-50 rounded-lg transition flex items-center gap-1.5 relative">
+            <i data-lucide="message-square" class="w-4 h-4 text-wine-800"></i>
+            <span class="hidden sm:inline">Fale Conosco / Chat</span>
+            <span id="nav-chat-unread-dot" class="hidden w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          </button>
+          <button onclick="app.openQuoteFormModal()" class="hidden sm:flex px-3.5 py-1.5 text-sm font-bold text-wine-950 bg-yellowbrand-400 hover:bg-yellowbrand-300 rounded-xl shadow transition items-center gap-1.5">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i> Nova Cotação
+          </button>
+          <div class="h-6 w-px bg-stone-200 mx-1"></div>
+          <div class="flex items-center gap-2">
+            <!-- Avatar do Usuário no Header -->
+            <img id="nav-client-avatar" src="" alt="Avatar" class="hidden w-8 h-8 rounded-full object-cover border-2 border-wine-800 shadow-sm cursor-pointer" onclick="app.navigateTo('client_dashboard')">
+            <span id="nav-client-name" class="text-xs font-bold text-wine-950 hidden lg:inline">Cliente</span>
+            <button onclick="app.logout()" title="Sair da Conta" class="p-1.5 text-stone-400 hover:text-wine-800 rounded-md hover:bg-stone-100 transition">
+              <i data-lucide="log-out" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Administrador Autenticado -->
+        <div id="nav-auth-admin" class="hidden flex items-center gap-2">
+          <button onclick="app.navigateTo('admin_dashboard')" class="px-3.5 py-1.5 text-sm font-bold text-white bg-wine-950 hover:bg-wine-900 rounded-xl shadow transition flex items-center gap-1.5 border border-yellowbrand-400/40">
+            <i data-lucide="layout-dashboard" class="w-4 h-4 text-yellowbrand-400"></i> Painel Admin
+            <span id="nav-admin-pending-badge" class="hidden ml-1 px-1.5 py-0.2 bg-yellowbrand-400 text-wine-950 font-black rounded-full text-[10px]">0</span>
+          </button>
+          <div class="flex items-center gap-1">
+            <span class="text-xs font-semibold text-wine-800 hidden lg:inline">Top10 Admin</span>
+            <button onclick="app.logout()" title="Sair da Conta" class="p-1.5 text-stone-400 hover:text-wine-800 rounded-md hover:bg-stone-100 transition">
+              <i data-lucide="log-out" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================== -->
+  <!-- VISTA 1: LANDING PAGE EM VERMELHO VINHO, AMARELO E BRANCO -->
+  <!-- ======================================================== -->
+  <main id="view-landing" class="flex-grow">
+    
+    <!-- Hero Section em Vermelho Vinho com Detalhes em Amarelo -->
+    <section class="relative overflow-hidden bg-gradient-to-b from-[#3a0311] via-[#5c061d] to-[#780a25] text-white pt-16 pb-24 lg:pt-24 lg:pb-32">
+      <div class="absolute -top-40 -right-40 w-96 h-96 bg-yellowbrand-400/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-wine-950/40 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid lg:grid-cols-12 gap-12 items-center">
+          
+          <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-wine-950/60 border border-yellowbrand-400/40 text-yellowbrand-300 text-xs font-bold uppercase tracking-wider shadow-sm">
+              <i data-lucide="map" class="w-4 h-4 text-yellowbrand-400"></i> top10cargas.com • Top10Cargas • Entregas em Todo o Brasil • Rodoviário & Aéreo
+            </div>
+            
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+              Sua carga transportada com a máxima segurança <br class="hidden sm:inline">
+              <span class="bg-gradient-to-r from-yellowbrand-200 via-yellowbrand-400 to-amber-300 bg-clip-text text-transparent">
+                em qualquer rota do Brasil
+              </span>
+            </h1>
+            
+            <p class="text-base sm:text-lg text-stone-200 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
+              Transporte rodoviário ágil e frete aéreo prioritário para capitais e interior. Anexe a foto da sua caixa e receba uma cotação justa calculada pela equipe técnica da <strong>Top10Cargas</strong> em <strong>Reais (R$)</strong>.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+              <button onclick="app.actionStartQuote()" class="w-full sm:w-auto px-8 py-4 bg-yellowbrand-400 hover:bg-yellowbrand-300 text-wine-950 font-black text-base rounded-xl shadow-xl shadow-yellowbrand-500/20 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 border border-yellowbrand-300">
+                <i data-lucide="calculator" class="w-5 h-5"></i>
+                Solicitar Cotação de Frete
+              </button>
+              <a href="#servicos" class="w-full sm:w-auto px-6 py-4 bg-wine-950/70 hover:bg-wine-950 text-white font-bold text-base rounded-xl border border-yellowbrand-400/30 transition flex items-center justify-center gap-2">
+                <i data-lucide="compass" class="w-5 h-5 text-yellowbrand-400"></i>
+                Nossos Serviços
+              </a>
+            </div>
+
+            <div class="pt-8 border-t border-wine-800/80 grid grid-cols-3 gap-4 text-center lg:text-left">
+              <div><p class="text-2xl sm:text-3xl font-black text-white">27 UFs</p><p class="text-xs text-yellowbrand-200">Todos os Estados e DF</p></div>
+              <div><p class="text-2xl sm:text-3xl font-black text-yellowbrand-300">+5.500</p><p class="text-xs text-yellowbrand-200">Municípios Atendidos</p></div>
+              <div><p class="text-2xl sm:text-3xl font-black text-white">Top 10</p><p class="text-xs text-yellowbrand-200">Agilidade e Confiança</p></div>
+            </div>
+          </div>
+
+          <!-- Card do Simulador Rápido -->
+          <div class="lg:col-span-5">
+            <div class="glass-card-wine p-6 sm:p-8 rounded-2xl shadow-2xl border border-yellowbrand-400/30 relative">
+              <div class="flex items-center justify-between pb-4 border-b border-wine-800">
+                <div class="flex items-center gap-2">
+                  <div class="p-2 bg-yellowbrand-400 text-wine-950 rounded-lg font-bold">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-white text-base">Cotação Rápida Top10</h3>
+                    <p class="text-xs text-yellowbrand-200">Envios Rodoviários ou Aéreos em BRL</p>
+                  </div>
+                </div>
+                <span class="text-xs font-bold px-2 py-0.5 rounded bg-yellowbrand-400 text-wine-950">
+                  Operando Agora
+                </span>
+              </div>
+
+              <form id="hero-quick-quote-form" onsubmit="app.handleHeroFormSubmit(event)" class="mt-5 space-y-4">
+                <div>
+                  <label class="block text-xs font-semibold text-yellowbrand-100 mb-1">Modalidade Desejada</label>
+                  <div class="grid grid-cols-2 gap-2">
+                    <label class="flex items-center gap-2 p-2 rounded-lg bg-wine-950 border border-wine-800 text-xs text-white cursor-pointer hover:border-yellowbrand-400">
+                      <input type="radio" name="hero-modality" value="rodoviario" checked class="text-yellowbrand-400 focus:ring-0">
+                      <span class="flex items-center gap-1 font-bold"><i data-lucide="truck" class="w-3.5 h-3.5 text-yellowbrand-400"></i> Rodoviário</span>
+                    </label>
+                    <label class="flex items-center gap-2 p-2 rounded-lg bg-wine-950 border border-wine-800 text-xs text-white cursor-pointer hover:border-yellowbrand-400">
+                      <input type="radio" name="hero-modality" value="aereo" class="text-yellowbrand-400 focus:ring-0">
+                      <span class="flex items-center gap-1 font-bold"><i data-lucide="plane" class="w-3.5 h-3.5 text-yellowbrand-400"></i> Aéreo</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-xs font-semibold text-yellowbrand-100 mb-1">Origem (Cidade / UF)</label>
+                    <input type="text" id="hero-origin" placeholder="Ex: São Paulo / SP" required class="w-full px-3 py-2 bg-wine-950 border border-wine-800 rounded-lg text-xs text-white placeholder-stone-400 focus:outline-none focus:border-yellowbrand-400">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-yellowbrand-100 mb-1">Destino (Cidade / UF)</label>
+                    <input type="text" id="hero-destination" placeholder="Ex: Manaus / AM" required class="w-full px-3 py-2 bg-wine-950 border border-wine-800 rounded-lg text-xs text-white placeholder-stone-400 focus:outline-none focus:border-yellowbrand-400">
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2">
+                  <div>
+                    <label class="block text-xs font-semibold text-yellowbrand-100 mb-1">Qtd. Volumes</label>
+                    <input type="number" id="hero-count" min="1" value="1" required class="w-full px-3 py-2 bg-wine-950 border border-wine-800 rounded-lg text-xs text-white focus:outline-none focus:border-yellowbrand-400">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-yellowbrand-100 mb-1">Peso (kg)</label>
+                    <input type="number" id="hero-weight" step="0.1" min="0.1" placeholder="Ex: 10" required class="w-full px-3 py-2 bg-wine-950 border border-wine-800 rounded-lg text-xs text-white placeholder-stone-400 focus:outline-none focus:border-yellowbrand-400">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-semibold text-yellowbrand-100 mb-1">Dimensões</label>
+                    <select id="hero-size-preset" class="w-full px-2 py-2 bg-wine-950 border border-wine-800 rounded-lg text-xs text-white focus:outline-none focus:border-yellowbrand-400">
+                      <option value="pequeno">Caixa Pequena</option>
+                      <option value="mediano" selected>Caixa Média</option>
+                      <option value="grande">Volume Grande</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="p-3 bg-wine-950/90 rounded-lg border border-yellowbrand-400/20 text-xs text-stone-200 flex items-start gap-2.5">
+                  <i data-lucide="camera" class="w-4 h-4 text-yellowbrand-400 mt-0.5 flex-shrink-0"></i>
+                  <span>Você poderá anexar a foto da caixa para que o entregador Top10 faça a cotação exata.</span>
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-yellowbrand-400 hover:bg-yellowbrand-300 text-wine-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                  <span>Preencher Detalhes & Anexar Foto</span>
+                  <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Serviços Oferecidos -->
+    <section id="servicos" class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <span class="text-xs font-bold uppercase tracking-wider text-wine-900 bg-wine-50 px-3.5 py-1 rounded-full border border-wine-200">Modalidades Top10</span>
+          <h2 class="text-3xl sm:text-4xl font-black text-wine-950 mt-3 tracking-tight">Soluções Rodoviárias e Aéreas Integradas</h2>
+          <p class="text-stone-600 mt-3 text-base">Atendemos encomendas expressas de ponta a ponta e remessas corporativas com seguro completo.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <div class="p-8 rounded-2xl bg-gradient-to-br from-wine-950 to-wine-900 text-white shadow-xl relative overflow-hidden group border border-wine-800">
+            <div class="w-14 h-14 rounded-2xl bg-yellowbrand-400 text-wine-950 flex items-center justify-center mb-6 font-bold shadow-md">
+              <i data-lucide="plane-takeoff" class="w-7 h-7"></i>
+            </div>
+            <span class="px-2.5 py-0.5 rounded text-[10px] font-black uppercase bg-yellowbrand-400 text-wine-950">Mais Rápido</span>
+            <h3 class="text-2xl font-black mt-2 mb-3">Transporte Aéreo Nacional Express</h3>
+            <p class="text-stone-200 text-sm leading-relaxed mb-6">
+              Conexões prioritárias nos maiores aeroportos do país (GRU, VCP, GIG, BSB, CNF, MAO, SSA, POA, REC). Prazos de 24h a 48h para a maioria das capitais.
+            </p>
+            <button onclick="app.openQuoteFormModal({modality: 'aereo'})" class="px-5 py-2.5 bg-yellowbrand-400 hover:bg-yellowbrand-300 text-wine-950 font-black text-xs rounded-xl shadow transition flex items-center gap-2">
+              <i data-lucide="send" class="w-4 h-4"></i> Cotar Envio Aéreo
+            </button>
+          </div>
+
+          <div class="p-8 rounded-2xl bg-stone-50 border border-stone-200 shadow-lg relative overflow-hidden group hover:border-wine-800 transition">
+            <div class="w-14 h-14 rounded-2xl bg-wine-100 text-wine-900 flex items-center justify-center mb-6 font-bold">
+              <i data-lucide="truck" class="w-7 h-7"></i>
+            </div>
+            <span class="px-2.5 py-0.5 rounded text-[10px] font-black uppercase bg-wine-800 text-yellowbrand-300">Melhor Custo-Benefício</span>
+            <h3 class="text-2xl font-black text-wine-950 mt-2 mb-3">Transporte Rodoviário Fracionado & Direto</h3>
+            <p class="text-stone-600 text-sm leading-relaxed mb-6">
+              Frota conectando as principais rodovias nacionais (Dutra, Regis Bittencourt, Anhanguera, BR-101, BR-116). Perfeito para caixas médias e mercadorias industriais.
+            </p>
+            <button onclick="app.openQuoteFormModal({modality: 'rodoviario'})" class="px-5 py-2.5 bg-wine-950 hover:bg-wine-900 text-white font-black text-xs rounded-xl shadow transition flex items-center gap-2 border border-wine-800">
+              <i data-lucide="send" class="w-4 h-4 text-yellowbrand-400"></i> Cotar Envio Rodoviário
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contato & Fale Conosco -->
+    <section id="contato" class="py-20 bg-[#36020f] text-white border-t border-wine-950">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-r from-wine-950 to-[#4c0519] rounded-3xl p-8 sm:p-12 border border-yellowbrand-400/20 shadow-2xl">
+          <div class="grid lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellowbrand-400/10 border border-yellowbrand-400/30 text-yellowbrand-300 text-xs font-bold uppercase tracking-wider mb-3">
+                <i data-lucide="globe" class="w-3.5 h-3.5 text-yellowbrand-400"></i> top10cargas.com
+              </span>
+              <h2 class="text-3xl font-black text-white">Central de Atendimento & Fale Conosco</h2>
+              <p class="text-stone-200 mt-2 text-sm">
+                Central de operações com acompanhamento contínuo em tempo real das suas entregas por todo o Brasil. Fale diretamente com nossa equipe pelo portal.
+              </p>
+              <div class="mt-5 space-y-2.5 text-xs text-stone-200">
+                <div class="flex items-center gap-3">
+                  <i data-lucide="phone" class="w-5 h-5 text-yellowbrand-400"></i>
+                  <span>+55 41 99655-2323 • Central de Atendimento</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <i data-lucide="mail" class="w-5 h-5 text-yellowbrand-400"></i>
+                  <span>top10cargas@hotmail.com</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <i data-lucide="globe" class="w-5 h-5 text-yellowbrand-400"></i>
+                  <span><a href="https://top10cargas.com" target="_blank" class="text-yellowbrand-300 hover:underline font-bold">top10cargas.com</a></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3.5 justify-center lg:justify-end flex-wrap">
+              <!-- Botão Chat LAN Messenger / Fale Conosco -->
+              <button onclick="app.handleContactChatClick()" class="px-5 py-3.5 bg-yellowbrand-400 hover:bg-yellowbrand-300 text-wine-950 font-black rounded-xl shadow-lg flex items-center justify-center gap-2 transition text-xs uppercase tracking-wider">
+                <i data-lucide="message-square" class="w-5 h-5"></i>
+                Chat com o Administrador
+              </button>
+              <a href="https://wa.me/5541996552323" target="_blank" class="px-5 py-3.5 bg-wine-950 hover:bg-wine-900 border border-yellowbrand-400/40 text-yellowbrand-300 font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition text-xs uppercase tracking-wider">
+                <i data-lucide="message-circle" class="w-5 h-5"></i>
+                WhatsApp Central
+              </a>
+              <button onclick="app.actionStartQuote()" class="px-5 py-3.5 bg-wine-900 hover:bg-wine-800 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition text-xs uppercase tracking-wider border border-wine-700">
+                <i data-lucide="plane-takeoff" class="w-5 h-5 text-yellowbrand-400"></i>
+                Cotar Carga
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- VISTA 2: PAINEL DO CLIENTE -->
+  <!-- ======================================================== -->
+  <main id="view-client-dashboard" class="hidden flex-grow py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+    
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 bg-white p-6 rounded-2xl border border-wine-100 shadow-sm">
+      <div class="flex items-center gap-4">
+        <!-- FOTO DE PERFIL DO CLIENTE — clique para alterar -->
+        <div class="relative group cursor-pointer" onclick="document.getElementById('profile-photo-input').click()" title="Clique para alterar sua foto de perfil">
+          <div id="profile-avatar-wrapper" class="w-16 h-16 rounded-2xl bg-wine-50 text-wine-900 flex items-center justify-center font-bold text-xl border-2 border-wine-200 overflow-hidden shadow-sm">
+            <i data-lucide="user" class="w-8 h-8" id="profile-avatar-icon"></i>
+            <img id="profile-avatar-img" src="" alt="Foto de perfil" class="hidden w-full h-full object-cover">
+          </div>
+          <div class="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+            <i data-lucide="camera" class="w-5 h-5 text-white"></i>
+          </div>
+          <input type="file" id="profile-photo-input" accept="image/*" class="hidden" onchange="app.handleProfilePhotoSelected(event)">
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-black text-wine-950" id="client-profile-name">Lucas Silveira</h1>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-yellowbrand-100 text-yellowbrand-800 border border-yellowbrand-300">Cliente Verificado</span>
+          </div>
+          <p class="text-xs text-stone-500 mt-1 flex items-center gap-2">
+            <span id="client-profile-email">lucas@empresa.com.br</span> • 
+            <span id="client-profile-phone">+55 11 98765-4321</span>
+          </p>
+          <button onclick="document.getElementById('profile-photo-input').click()" class="mt-1 text-[10px] text-wine-800 hover:underline flex items-center gap-1 font-semibold">
+            <i data-lucide="camera" class="w-3 h-3"></i> Alterar foto de perfil
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="app.openQuoteFormModal()" class="px-5 py-2.5 bg-wine-900 hover:bg-wine-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-sm transition flex items-center gap-2 border border-wine-950">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-yellowbrand-400"></i>
+          Nova Solicitação de Envio
+        </button>
+      </div>
+    </div>
+
+    <!-- Abas do Cliente -->
+    <div class="border-b border-stone-200 mb-6 flex items-center gap-4">
+      <button id="tab-client-proposals-btn" onclick="app.setClientTab('proposals')" class="pb-3 text-sm font-bold border-b-2 border-wine-900 text-wine-900 flex items-center gap-2">
+        <i data-lucide="inbox" class="w-4 h-4 text-yellowbrand-500"></i>
+        Cotações & Rastreamento em Andamento
+        <span id="client-proposals-count" class="px-2 py-0.5 rounded-full text-[10px] bg-wine-100 text-wine-900 font-extrabold">0</span>
+      </button>
+      <button id="tab-client-history-btn" onclick="app.setClientTab('history')" class="pb-3 text-sm font-bold border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
+        <i data-lucide="history" class="w-4 h-4"></i>
+        Histórico de Entregas Concluídas
+        <span id="client-history-count" class="px-2 py-0.5 rounded-full text-[10px] bg-stone-100 text-stone-600 font-extrabold">0</span>
+      </button>
+      <button id="tab-client-chat-btn" onclick="app.setClientTab('chat')" class="pb-3 text-sm font-bold border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
+        <i data-lucide="message-square" class="w-4 h-4 text-wine-800"></i>
+        Fale Conosco & Chat com Suporte
+        <span id="client-chat-unread-badge" class="hidden px-2 py-0.5 rounded-full text-[10px] bg-wine-800 text-yellowbrand-400 font-black">0</span>
+      </button>
+    </div>
+
+    <!-- Aba 1: Cotações & Rastreamento -->
+    <div id="tab-client-proposals-content" class="space-y-6">
+      <div class="notice-sujeta-analisis p-4 rounded-xl text-xs text-wine-950 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <i data-lucide="info" class="w-5 h-5 text-wine-800 flex-shrink-0"></i>
+          <span>
+            <strong>Rastreamento Top10Cargas:</strong> Após aprovar a proposta comercial, você pode acompanhar em tempo real se a carga está <em>Aguardando Coleta</em>, <em>A Caminho (Em Trânsito)</em> ou <em>Já Entregue</em> ao destinatário.
+          </span>
+        </div>
+      </div>
+
+      <div id="client-active-quotes-list" class="grid gap-6"></div>
+    </div>
+
+    <!-- Aba 2: Histórico Geral -->
+    <div id="tab-client-history-content" class="hidden">
+      <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
+        <div class="p-4 border-b border-stone-200 flex items-center justify-between bg-stone-50">
+          <h3 class="font-bold text-wine-950 text-sm flex items-center gap-2">
+            <i data-lucide="archive" class="w-4 h-4 text-wine-800"></i> Histórico Geral de Entregas Top10Cargas
+          </h3>
+          <span class="text-xs text-stone-500 font-semibold">Valores em Reais (BRL)</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-stone-600">
+            <thead class="bg-stone-100 text-stone-700 font-bold border-b border-stone-200">
+              <tr>
+                <th class="p-3.5">Código / Data</th>
+                <th class="p-3.5">Foto</th>
+                <th class="p-3.5">Modalidade</th>
+                <th class="p-3.5">Trajeto (Origem ➔ Destino)</th>
+                <th class="p-3.5">Volumes / Peso</th>
+                <th class="p-3.5">Valor Acordado</th>
+                <th class="p-3.5">Status</th>
+                <th class="p-3.5 text-right">Comprovante</th>
+              </tr>
+            </thead>
+            <tbody id="client-history-table-body" class="divide-y divide-stone-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aba 3: Fale Conosco & Chat com Suporte (LAN Messenger) -->
+    <div id="tab-client-chat-content" class="hidden">
+      <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm flex flex-col h-[580px]">
+        
+        <!-- Header do Chat -->
+        <div class="p-4 bg-gradient-to-r from-wine-950 to-wine-900 text-white flex items-center justify-between border-b border-wine-800">
+          <div class="flex items-center gap-3">
+            <div class="relative">
+              <div class="w-11 h-11 rounded-xl bg-yellowbrand-400 text-wine-950 flex items-center justify-center font-bold text-lg shadow-md">
+                <i data-lucide="headphones" class="w-6 h-6"></i>
+              </div>
+              <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-wine-950 rounded-full" title="Operador Online"></span>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h4 class="font-bold text-sm text-white">Central de Atendimento Top10Cargas</h4>
+                <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full text-[10px] font-semibold">Online • LAN Messenger</span>
+              </div>
+              <p class="text-[11px] text-yellowbrand-200">Canal direto com o Administrador e equipe de cotação • top10cargas.com</p>
+            </div>
+          </div>
+          <div class="text-right hidden sm:block">
+            <span class="text-[11px] text-stone-300">Tempo de resposta médio: <strong class="text-yellowbrand-400">em tempo real</strong></span>
+          </div>
+        </div>
+
+        <!-- Área de Mensagens (Scrollable) -->
+        <div id="client-chat-messages" class="flex-grow p-4 overflow-y-auto space-y-3 bg-stone-50 text-xs">
+          <!-- Mensagens renderizadas dinamicamente via JS -->
+        </div>
+
+        <!-- Barra de Envio de Mensagem -->
+        <form id="form-client-chat" onsubmit="app.handleClientSendMessage(event)" class="p-3 bg-white border-t border-stone-200 flex items-center gap-2">
+          <input type="text" id="client-chat-input" placeholder="Digite sua mensagem, dúvida sobre frete ou solicitação..." autocomplete="off" class="flex-grow px-4 py-2.5 text-xs bg-stone-100 border border-stone-300 rounded-xl focus:outline-none focus:border-wine-800 focus:bg-white transition">
+          <button type="submit" id="btn-client-chat-send" class="px-5 py-2.5 bg-wine-900 hover:bg-wine-950 text-yellowbrand-300 font-bold text-xs uppercase tracking-wider rounded-xl shadow transition flex items-center gap-1.5 flex-shrink-0">
+            <span>Enviar</span>
+            <i data-lucide="send" class="w-3.5 h-3.5"></i>
+          </button>
+        </form>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- VISTA 3: PAINEL DE ADMINISTRAÇÃO (Top10Cargas) -->
+  <!-- ======================================================== -->
+  <main id="view-admin-dashboard" class="hidden flex-grow py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+    
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 bg-wine-950 text-white p-6 rounded-2xl shadow-xl border border-yellowbrand-400/20">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-2xl bg-yellowbrand-400 text-wine-950 flex items-center justify-center font-bold text-xl shadow-md">
+          <i data-lucide="shield-check" class="w-7 h-7"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-black tracking-tight">Top10Cargas - Centro de Controle</h1>
+            <span class="px-2 py-0.5 rounded text-xs font-black bg-yellowbrand-400 text-wine-950 uppercase">Operador Autorizado</span>
+          </div>
+          <p class="text-xs text-yellowbrand-200 mt-1">Conectado como: <strong class="text-white">top10cargas@hotmail.com</strong></p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="app.exportHistoryCSV()" class="px-4 py-2 bg-wine-900 hover:bg-wine-800 text-stone-200 text-xs font-bold rounded-xl border border-wine-700 flex items-center gap-2 transition">
+          <i data-lucide="download" class="w-4 h-4 text-yellowbrand-400"></i> Exportar Relatório (CSV)
+        </button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold text-stone-500">Pendentes de Análise</span>
+          <span class="p-2 bg-yellowbrand-50 text-yellowbrand-600 rounded-lg"><i data-lucide="clock" class="w-4 h-4"></i></span>
+        </div>
+        <p id="kpi-pending-count" class="text-2xl font-black text-yellowbrand-600">0</p>
+        <p class="text-[11px] text-stone-400 mt-1">Aguardando cálculo da equipe Top10</p>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold text-stone-500">Propostas Enviadas</span>
+          <span class="p-2 bg-wine-50 text-wine-800 rounded-lg"><i data-lucide="send" class="w-4 h-4"></i></span>
+        </div>
+        <p id="kpi-sent-count" class="text-2xl font-black text-wine-800">0</p>
+        <p class="text-[11px] text-stone-400 mt-1">Aguardando resposta do cliente</p>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold text-stone-500">Serviços Aprovados em Rota</span>
+          <span class="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><i data-lucide="truck" class="w-4 h-4"></i></span>
+        </div>
+        <p id="kpi-accepted-count" class="text-2xl font-black text-emerald-600">0</p>
+        <p class="text-[11px] text-stone-400 mt-1">Em coleta ou a caminho</p>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold text-stone-500">Faturamento Aprovado (BRL)</span>
+          <span class="p-2 bg-amber-50 text-amber-600 rounded-lg"><i data-lucide="banknote" class="w-4 h-4"></i></span>
+        </div>
+        <p id="kpi-total-revenue" class="text-2xl font-black text-wine-950">R$ 0,00</p>
+        <p class="text-[11px] text-stone-400 mt-1">Serviços aceitos e concluídos</p>
+      </div>
+    </div>
+
+    <!-- Abas Admin -->
+    <div class="border-b border-stone-200 mb-6 flex items-center gap-4 flex-wrap">
+      <button id="tab-admin-pending-btn" onclick="app.setAdminTab('pending')" class="pb-3 text-sm font-bold border-b-2 border-wine-900 text-wine-900 flex items-center gap-2">
+        <i data-lucide="inbox" class="w-4 h-4 text-yellowbrand-500"></i>
+        Análises Pendentes
+        <span id="admin-pending-badge" class="px-2 py-0.5 rounded-full text-[10px] bg-yellowbrand-200 text-wine-950 font-black">0</span>
+      </button>
+      <button id="tab-admin-active-btn" onclick="app.setAdminTab('active')" class="pb-3 text-sm font-bold border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
+        <i data-lucide="truck" class="w-4 h-4"></i>
+        Gestão de Entregas & Rastreamento Ativo
+        <span id="admin-active-badge" class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800 font-extrabold">0</span>
+      </button>
+      <button id="tab-admin-history-btn" onclick="app.setAdminTab('history')" class="pb-3 text-sm font-bold border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
+        <i data-lucide="database" class="w-4 h-4"></i>
+        Histórico Geral Nacional
+        <span id="admin-history-badge" class="px-2 py-0.5 rounded-full text-[10px] bg-stone-100 text-stone-600 font-extrabold">0</span>
+      </button>
+      <button id="tab-admin-users-btn" onclick="app.setAdminTab('users')" class="pb-3 text-sm font-bold border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
+        <i data-lucide="users" class="w-4 h-4"></i>
+        Gestão de Usuários
+      </button>
+      <button id="tab-admin-financial-btn" onclick="app.setAdminTab('financial')" class="pb-3 text-sm font-bold border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
+        <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+        Relatório Financeiro
+      </button>
+      <button id="tab-admin-chat-btn" onclick="app.setAdminTab('chat')" class="pb-3 text-sm font-bold border-b-2 border-transparent text-stone-500 hover:text-stone-800 flex items-center gap-2">
+        <i data-lucide="message-square" class="w-4 h-4"></i>
+        Chat LAN Messenger
+        <span id="admin-chat-unread-badge" class="hidden px-2 py-0.5 rounded-full text-[10px] bg-wine-800 text-yellowbrand-400 font-black">0</span>
+      </button>
+    </div>
+
+    <div id="tab-admin-pending-content" class="space-y-4">
+      <div id="admin-pending-quotes-container" class="space-y-4"></div>
+    </div>
+
+    <div id="tab-admin-active-content" class="hidden space-y-4">
+      <div id="admin-accepted-quotes-container" class="space-y-4"></div>
+    </div>
+
+    <div id="tab-admin-history-content" class="hidden space-y-4">
+      <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
+        <div class="p-4 bg-stone-50 border-b border-stone-200 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-2 flex-grow max-w-md">
+            <i data-lucide="search" class="w-4 h-4 text-stone-400"></i>
+            <input type="text" id="admin-history-search" placeholder="Buscar por cliente, código, cidade ou CEP..." oninput="app.filterAdminHistory()" class="w-full text-xs px-3 py-2 bg-white border border-stone-300 rounded-lg focus:outline-none focus:border-wine-800">
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-stone-500">Filtrar por Status:</span>
+            <select id="admin-history-filter-status" onchange="app.filterAdminHistory()" class="text-xs px-3 py-2 bg-white border border-stone-300 rounded-lg focus:outline-none focus:border-wine-800">
+              <option value="ALL">Todos os Status</option>
+              <option value="PENDIENTE_ANALISIS">Cotação Sujeita a Análise</option>
+              <option value="PROPUESTA_ENVIADA">Proposta Enviada</option>
+              <option value="ACEPTADA">Aceita pelo Cliente</option>
+              <option value="DENEGADA">Recusada</option>
+              <option value="REANALISIS_SOLICITADO">Reanálise Solicitada</option>
+              <option value="COMPLETADO">Entregue / Concluído</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-stone-600">
+            <thead class="bg-stone-100 text-stone-700 font-bold border-b border-stone-200">
+              <tr>
+                <th class="p-3.5">Código / Data</th>
+                <th class="p-3.5">Foto</th>
+                <th class="p-3.5">Cliente</th>
+                <th class="p-3.5">Modal</th>
+                <th class="p-3.5">Origem ➔ Destino</th>
+                <th class="p-3.5">Volumes / Medidas / Peso</th>
+                <th class="p-3.5">Proposta em R$</th>
+                <th class="p-3.5">Status</th>
+                <th class="p-3.5 text-right">Comprovante</th>
+                <th class="p-3.5">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="admin-history-table-body" class="divide-y divide-stone-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aba Gestão de Usuários -->
+    <div id="tab-admin-users-content" class="hidden">
+      <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
+        <div class="p-4 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
+          <h3 class="font-bold text-wine-950 text-sm flex items-center gap-2">
+            <i data-lucide="users" class="w-4 h-4 text-wine-800"></i> Gestão de Contas de Usuários
+          </h3>
+          <span class="text-xs text-stone-500">Clique em uma conta para ver detalhes e ações</span>
+        </div>
+        <div id="admin-users-list" class="divide-y divide-stone-100 p-4 space-y-3"></div>
+      </div>
+    </div>
+
+    <!-- Aba Relatório Financeiro -->
+    <div id="tab-admin-financial-content" class="hidden">
+      <div class="space-y-6">
+        <!-- Filtros de Período -->
+        <div class="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm">
+          <div class="flex flex-wrap items-center gap-4">
+            <div class="flex items-center gap-2">
+              <i data-lucide="calendar" class="w-4 h-4 text-wine-800"></i>
+              <span class="text-xs font-bold text-wine-950">Período do Relatório:</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="text-xs font-semibold text-stone-600">Agrupamento:</label>
+              <select id="financial-group-by" onchange="app.renderFinancialReport()" class="text-xs px-3 py-1.5 bg-white border border-stone-300 rounded-lg focus:outline-none focus:border-wine-800">
+                <option value="week">Por Semana</option>
+                <option value="month">Por Mês</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="text-xs font-semibold text-stone-600">De:</label>
+              <input type="date" id="financial-date-from" class="text-xs px-3 py-1.5 border border-stone-300 rounded-lg focus:outline-none focus:border-wine-800">
+            </div>
+            <div class="flex items-center gap-2">
+              <label class="text-xs font-semibold text-stone-600">Até:</label>
+              <input type="date" id="financial-date-to" class="text-xs px-3 py-1.5 border border-stone-300 rounded-lg focus:outline-none focus:border-wine-800">
+            </div>
+            <button onclick="app.renderFinancialReport()" class="px-4 py-1.5 bg-wine-900 hover:bg-wine-800 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 transition">
+              <i data-lucide="search" class="w-3.5 h-3.5"></i> Gerar
+            </button>
+            <button onclick="app.exportFinancialExcel()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg flex items-center gap-1.5 transition">
+              <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i> Exportar Excel
+            </button>
+          </div>
+        </div>
+        <!-- KPIs Financeiros -->
+        <div id="financial-kpis" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
+        <!-- Gráfico PowerBI -->
+        <div id="financial-chart-container" class="bg-white rounded-2xl border border-stone-200 p-6 shadow-sm">
+          <div id="financial-chart" class="w-full" style="min-height:300px"></div>
+        </div>
+        <!-- Tabela Detalhada -->
+        <div id="financial-table-container" class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
+          <div class="p-4 bg-stone-50 border-b border-stone-200">
+            <h4 class="font-bold text-wine-950 text-sm flex items-center gap-2">
+              <i data-lucide="table" class="w-4 h-4"></i> Detalhamento por Pedido
+            </h4>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-stone-600">
+              <thead class="bg-stone-50 text-stone-700 font-bold border-b border-stone-200">
+                <tr>
+                  <th class="p-3">Código</th>
+                  <th class="p-3">Data</th>
+                  <th class="p-3">Cliente</th>
+                  <th class="p-3">Modalidade</th>
+                  <th class="p-3">Rota</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3 text-right">Valor (R$)</th>
+                </tr>
+              </thead>
+              <tbody id="financial-table-body" class="divide-y divide-stone-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aba 5: Chat LAN Messenger (Admin) -->
+    <div id="tab-admin-chat-content" class="hidden">
+      <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm grid grid-cols-1 lg:grid-cols-12 h-[640px]">
+        
+        <!-- Coluna Esquerda: Lista de Contatos / Clientes (4 cols) -->
+        <div class="lg:col-span-4 border-r border-stone-200 flex flex-col h-full bg-stone-50">
+          <div class="p-3.5 bg-white border-b border-stone-200">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="font-bold text-wine-950 text-xs flex items-center gap-1.5">
+                <i data-lucide="users" class="w-4 h-4 text-wine-800"></i>
+                Clientes Conectados (LAN)
+              </h4>
+              <span id="admin-chat-total-clients" class="text-[10px] bg-wine-50 text-wine-900 border border-wine-200 px-2 py-0.5 rounded-full font-bold">0</span>
+            </div>
+            <div class="relative">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-2.5"></i>
+              <input type="text" id="admin-chat-search" placeholder="Buscar cliente por nome..." oninput="app.filterAdminChatContacts()" class="w-full pl-8 pr-3 py-1.5 bg-stone-100 border border-stone-200 rounded-lg text-xs focus:outline-none focus:border-wine-800 focus:bg-white transition">
+            </div>
+          </div>
+
+          <!-- Lista de Conversas -->
+          <div id="admin-chat-contacts-list" class="flex-grow overflow-y-auto divide-y divide-stone-100 text-xs">
+            <!-- Renderizado dinamicamente via JS -->
+          </div>
+        </div>
+
+        <!-- Coluna Direita: Janela de Chat Ativa (8 cols) -->
+        <div class="lg:col-span-8 flex flex-col h-full bg-white">
+          <!-- Cabeçalho do Chat Ativo -->
+          <div id="admin-chat-active-header" class="p-3.5 border-b border-stone-200 flex items-center justify-between bg-stone-50">
+            <div class="flex items-center gap-3">
+              <div id="admin-chat-header-avatar" class="w-10 h-10 rounded-xl bg-wine-100 text-wine-900 flex items-center justify-center font-bold text-sm shadow-xs overflow-hidden">
+                <i data-lucide="user" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h4 id="admin-chat-header-name" class="font-bold text-xs text-slate-900">Selecione um cliente para conversar</h4>
+                  <span id="admin-chat-header-badge" class="hidden text-[9px] px-2 py-0.5 rounded-full font-semibold">Cliente</span>
+                </div>
+                <p id="admin-chat-header-meta" class="text-[10px] text-stone-500">Histórico de mensagens sincronizado via LAN Messenger</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-1 rounded border border-emerald-200 flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                LAN Ativa
+              </span>
+            </div>
+          </div>
+
+          <!-- Mensagens do Chat Ativo -->
+          <div id="admin-chat-messages" class="flex-grow p-4 overflow-y-auto space-y-3 bg-stone-50 text-xs">
+            <div class="flex flex-col items-center justify-center h-full text-stone-400 text-center">
+              <i data-lucide="message-square" class="w-10 h-10 mb-2 opacity-40"></i>
+              <p class="font-bold">Nenhuma conversa selecionada</p>
+              <p class="text-[11px] mt-1">Selecione um cliente na lista à esquerda para ler e responder mensagens.</p>
+            </div>
+          </div>
+
+          <!-- Formulário de Envio -->
+          <form id="form-admin-chat" onsubmit="app.handleAdminSendMessage(event)" class="p-3 border-t border-stone-200 flex items-center gap-2 bg-white">
+            <input type="text" id="admin-chat-input" disabled placeholder="Selecione um cliente primeiro..." autocomplete="off" class="flex-grow px-4 py-2 text-xs bg-stone-100 border border-stone-300 rounded-xl focus:outline-none focus:border-wine-800 focus:bg-white transition disabled:opacity-60 disabled:cursor-not-allowed">
+            <button type="submit" id="btn-admin-chat-send" disabled class="px-5 py-2 bg-yellowbrand-400 hover:bg-yellowbrand-300 text-wine-950 font-black text-xs uppercase tracking-wider rounded-xl shadow transition flex items-center gap-1.5 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
+              <span>Enviar</span>
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: FORMULÁRIO DE COTAÇÃO COM UPLOAD DE FOTO -->
+  <!-- ======================================================== -->
+  <div id="modal-quote-form" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-wine-100 overflow-hidden flex flex-col max-h-[92vh] animate-fade-in">
+      
+      <div class="p-5 bg-gradient-to-r from-wine-950 via-wine-900 to-wine-800 text-white flex items-center justify-between border-b border-yellowbrand-400/20">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-yellowbrand-400 text-wine-950 rounded-xl font-bold">
+            <i data-lucide="package-plus" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base">Top10Cargas - Solicitar Cotação de Frete</h3>
+            <p class="text-xs text-yellowbrand-200">Transporte Rodoviário ou Aéreo com foto da embalagem</p>
+          </div>
+        </div>
+        <button onclick="app.closeQuoteFormModal()" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="form-new-quote" onsubmit="app.handleQuoteSubmit(event)" class="p-6 overflow-y-auto space-y-5 text-stone-700">
+        
+        <!-- Modalidade -->
+        <div class="bg-stone-50 p-4 rounded-xl border border-stone-200">
+          <label class="font-bold text-xs uppercase tracking-wider text-wine-950 block mb-2">Modalidade do Transporte</label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="flex items-center gap-3 p-3 rounded-xl border border-stone-300 bg-white cursor-pointer hover:border-wine-800 transition">
+              <input type="radio" name="quote-modality" value="rodoviario" id="modal-mod-rodoviario" checked class="text-wine-800 focus:ring-0">
+              <div>
+                <span class="text-xs font-bold text-wine-950 block flex items-center gap-1.5"><i data-lucide="truck" class="w-4 h-4 text-wine-800"></i> Rodoviário Nacional</span>
+                <span class="text-[10px] text-stone-500">Carga fracionada ou direta</span>
+              </div>
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl border border-stone-300 bg-white cursor-pointer hover:border-wine-800 transition">
+              <input type="radio" name="quote-modality" value="aereo" id="modal-mod-aereo" class="text-wine-800 focus:ring-0">
+              <div>
+                <span class="text-xs font-bold text-wine-950 block flex items-center gap-1.5"><i data-lucide="plane" class="w-4 h-4 text-yellowbrand-600"></i> Frete Aéreo Express</span>
+                <span class="text-[10px] text-stone-500">Aeroportos e capitais</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Quantidade de Volumes -->
+        <div class="bg-wine-50/60 p-4 rounded-xl border border-wine-100 flex items-center justify-between">
+          <label class="font-bold text-sm text-wine-950 flex items-center gap-2">
+            <i data-lucide="boxes" class="w-4 h-4 text-wine-800"></i>
+            Quantos pacotes / volumes você está enviando?
+          </label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="quote-package-count" min="1" max="500" value="1" required class="w-20 px-3 py-1.5 bg-white border border-wine-300 rounded-lg text-center font-bold text-wine-950 text-base focus:outline-none focus:ring-2 focus:ring-wine-800">
+            <span class="text-xs font-bold text-wine-900">volume(s)</span>
+          </div>
+        </div>
+
+        <!-- Dimensões da Caixa -->
+        <div>
+          <label class="font-bold text-sm text-wine-950 block mb-2 flex items-center gap-2">
+            <i data-lucide="ruler" class="w-4 h-4 text-wine-800"></i>
+            Tamanho e Dimensões por volume em centímetros (cm)
+          </label>
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <span class="block text-xs font-semibold text-stone-500 mb-1">Comprimento (cm)</span>
+              <input type="number" id="quote-length" step="0.5" min="1" placeholder="Ex: 40" required oninput="app.calculateVolumePreview()" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm focus:outline-none focus:border-wine-800">
+            </div>
+            <div>
+              <span class="block text-xs font-semibold text-stone-500 mb-1">Largura (cm)</span>
+              <input type="number" id="quote-width" step="0.5" min="1" placeholder="Ex: 30" required oninput="app.calculateVolumePreview()" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm focus:outline-none focus:border-wine-800">
+            </div>
+            <div>
+              <span class="block text-xs font-semibold text-stone-500 mb-1">Altura (cm)</span>
+              <input type="number" id="quote-height" step="0.5" min="1" placeholder="Ex: 25" required oninput="app.calculateVolumePreview()" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm focus:outline-none focus:border-wine-800">
+            </div>
+          </div>
+          <p id="volume-preview-text" class="text-[11px] text-stone-500 mt-1.5 italic">
+            Cubagem calculada: 0,00 cm³ (0,000 m³) • Peso cubado estimado: 0,00 kg
+          </p>
+        </div>
+
+        <!-- Peso e Valor Declarado -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="font-bold text-sm text-wine-950 block mb-1.5 flex items-center gap-2">
+              <i data-lucide="scale" class="w-4 h-4 text-wine-800"></i>
+              Peso Total Real (kg)
+            </label>
+            <div class="relative">
+              <input type="number" id="quote-weight" step="0.1" min="0.1" placeholder="Ex: 12.5" required class="w-full pl-3 pr-12 py-2 border border-stone-300 rounded-lg text-sm focus:outline-none focus:border-wine-800 font-semibold">
+              <span class="absolute right-3 top-2 text-xs font-bold text-stone-400">KG</span>
+            </div>
+          </div>
+
+          <div>
+            <label class="font-bold text-sm text-wine-950 block mb-1.5 flex items-center gap-2">
+              <i data-lucide="shield" class="w-4 h-4 text-wine-800"></i>
+              Valor da Nota Fiscal / Declarado (R$)
+            </label>
+            <div class="relative">
+              <input type="number" id="quote-declared-value" step="1" min="0" placeholder="Ex: 1500" class="w-full pl-10 pr-3 py-2 border border-stone-300 rounded-lg text-sm focus:outline-none focus:border-wine-800 font-semibold">
+              <span class="absolute left-3 top-2 text-xs font-bold text-stone-400">R$</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Origem e Destino -->
+        <div class="space-y-3 pt-2">
+          <div>
+            <label class="font-bold text-sm text-wine-950 block mb-1 flex items-center gap-2">
+              <i data-lucide="map-pin" class="w-4 h-4 text-wine-800"></i>
+              Origem da Carga (Endereço, Bairro, Cidade / UF e CEP)
+            </label>
+            <input type="text" id="quote-origin" placeholder="Ex: Av. Paulista, 1500, Bela Vista - São Paulo / SP - CEP 01310-200" required class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm focus:outline-none focus:border-wine-800">
+          </div>
+
+          <div>
+            <label class="font-bold text-sm text-wine-950 block mb-1 flex items-center gap-2">
+              <i data-lucide="navigation" class="w-4 h-4 text-yellowbrand-600"></i>
+              Destino da Carga (Endereço, Bairro, Cidade / UF e CEP)
+            </label>
+            <input type="text" id="quote-destination" placeholder="Ex: Rua das Flores, 450, Centro - Curitiba / PR - CEP 80010-000" required class="w-full px-3 py-2 border border-stone-300 rounded-lg text-sm focus:outline-none focus:border-wine-800">
+          </div>
+        </div>
+
+        <!-- Descrição do Conteúdo da Mercadoria & Upload de Foto do Pacote -->
+        <div class="space-y-3 p-4 bg-stone-50 rounded-xl border border-stone-200">
+          <div>
+            <label class="font-bold text-sm text-wine-950 block mb-1 flex items-center justify-between">
+              <span class="flex items-center gap-1.5"><i data-lucide="package" class="w-4 h-4 text-wine-800"></i> Descrição do Conteúdo do Pacote</span>
+              <span class="text-[10px] text-stone-500 font-normal">Identificação dos itens</span>
+            </label>
+            <textarea id="quote-description" rows="2" placeholder="Ex: Peças industriais, equipamentos eletrônicos, vestuário, materiais gráficos..." class="w-full px-3 py-2 bg-white border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800"></textarea>
+          </div>
+
+          <label class="flex items-center gap-2 cursor-pointer pt-0.5">
+            <input type="checkbox" id="quote-is-fragile" class="w-4 h-4 text-wine-800 rounded border-stone-300 focus:ring-wine-800">
+            <span class="text-xs font-semibold text-stone-700">Mercadoria Frágil (requer amarração especial e estiba prioritária)</span>
+          </label>
+
+          <!-- UPLOAD DE FOTO DO PACOTE INTEGRADO DIRETAMENTE NA DESCRIÇÃO -->
+          <div class="pt-3 border-t border-stone-200">
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="font-bold text-wine-950 text-xs flex items-center gap-1.5">
+                <i data-lucide="camera" class="w-4 h-4 text-wine-800"></i>
+                Foto do Pacote / Embalagem
+              </label>
+              <span class="text-[10px] font-bold text-wine-950 bg-yellowbrand-200 px-2 py-0.5 rounded border border-yellowbrand-400">Cotação Precisa</span>
+            </div>
+            <p class="text-[11px] text-stone-500 leading-snug mb-3">
+              Tire ou anexe uma foto do seu pacote ou caixa para que nossa equipe técnica analise a cubagem, integridade e calcule o frete correto.
+            </p>
+            
+            <div class="flex items-center gap-4 flex-wrap">
+              <label class="cursor-pointer px-4 py-2.5 bg-white hover:bg-wine-50 border-2 border-dashed border-stone-300 hover:border-wine-800 rounded-xl text-xs font-bold text-stone-700 flex items-center gap-2 transition shadow-sm">
+                <i data-lucide="upload-cloud" class="w-4 h-4 text-wine-800"></i>
+                <span>Enviar Foto do Pacote</span>
+                <input type="file" id="quote-package-image-file" accept="image/*" class="hidden" onchange="app.handleImageSelected(event)">
+              </label>
+              
+              <div id="quote-image-preview-container" class="hidden flex items-center gap-3 bg-white p-2 rounded-xl border border-stone-200 shadow-sm">
+                <img id="quote-image-preview" src="" alt="Foto do Pacote" class="w-16 h-16 object-cover rounded-lg border border-stone-300 shadow-sm cursor-pointer" onclick="window.open(this.src, '_blank')" title="Clique para ampliar">
+                <div class="text-xs">
+                  <span class="text-emerald-700 font-bold block flex items-center gap-1">
+                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Foto Anexada
+                  </span>
+                  <span class="text-[10px] text-stone-400 block mt-0.5">Pronta para envio</span>
+                  <button type="button" onclick="app.removeSelectedImage()" class="mt-1 text-wine-800 hover:underline flex items-center gap-1 text-[11px] font-semibold">
+                    <i data-lucide="trash-2" class="w-3 h-3"></i> Remover foto
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-stone-200 flex items-center justify-end gap-3">
+          <button type="button" onclick="app.closeQuoteFormModal()" class="px-4 py-2 text-sm font-semibold text-stone-600 hover:text-stone-800 transition">
+            Cancelar
+          </button>
+          <button type="submit" class="px-6 py-2.5 bg-yellowbrand-400 hover:bg-yellowbrand-300 text-wine-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-yellowbrand-500/20 flex items-center gap-2 transition">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            Enviar Solicitação
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL OBRIGATÓRIO: "Cotización de envio sujeta a analisis" -->
+  <!-- ======================================================== -->
+  <div id="modal-sujeta-analisis" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-wine-200 overflow-hidden text-center p-6 sm:p-8 animate-fade-in relative">
+      <div class="w-16 h-16 rounded-full bg-wine-50 text-wine-900 mx-auto flex items-center justify-center mb-4 border-2 border-yellowbrand-400">
+        <i data-lucide="search-check" class="w-8 h-8 animate-pulse text-wine-800"></i>
+      </div>
+
+      <h3 class="text-xl font-extrabold text-wine-950 tracking-tight mb-2">
+        Solicitação Recebida com Sucesso!
+      </h3>
+      
+      <div class="p-4 my-4 rounded-xl bg-wine-50 border border-wine-200 text-wine-950">
+        <p class="text-base font-black uppercase tracking-wide text-wine-900">
+          ''Cotización de envio sujeta a analisis''
+        </p>
+        <p class="text-xs font-bold text-yellowbrand-700 mt-1">
+          (Cotação de envio sujeita a análise)
+        </p>
+      </div>
+
+      <p class="text-xs text-stone-600 leading-relaxed mb-6">
+        Registramos os dados da sua carga com o código <strong id="modal-sujeta-folio" class="text-wine-950 font-black">COT-XXXX</strong>. 
+        Nossa equipe da <strong>Top10Cargas</strong> analisará a foto da embalagem, medidas e rota para emitir a proposta comercial com o melhor valor em Reais (R$). 
+        Você receberá uma notificação assim que a proposta estiver disponível no seu painel.
+      </p>
+
+      <div class="space-y-2">
+        <button onclick="app.closeSujetaAnalisisModal(true)" class="w-full py-3 bg-wine-900 hover:bg-wine-800 text-yellowbrand-300 font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition flex items-center justify-center gap-2 border border-wine-950">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          Acompanhar no Meu Painel
+        </button>
+        <button onclick="app.closeSujetaAnalisisModal(false)" class="w-full py-2 text-xs text-stone-500 hover:text-stone-800 font-semibold transition">
+          Continuar Navegando
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL DE ACESSO ADMINISTRATIVO RESTRITO (top10cargas@hotmail.com) -->
+  <!-- ======================================================== -->
+  <div id="modal-admin-auth" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-wine-200 overflow-hidden animate-fade-in">
+      <div class="p-5 bg-wine-950 text-white flex items-center justify-between border-b border-yellowbrand-400/30">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-yellowbrand-400 text-wine-950 rounded-xl font-bold">
+            <i data-lucide="lock" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base">Top10Cargas - Acesso Restrito</h3>
+            <p class="text-xs text-yellowbrand-200">Painel exclusivo para operadores autorizados</p>
+          </div>
+        </div>
+        <button onclick="app.closeAdminAuthModal()" class="text-stone-400 hover:text-white p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6">
+        <div id="admin-auth-error-message" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg flex items-center gap-2">
+          <i data-lucide="alert-triangle" class="w-4 h-4 flex-shrink-0"></i>
+          <span id="admin-auth-error-text">Credenciais de administrador incorretas.</span>
+        </div>
+
+        <form id="form-admin-login" onsubmit="app.handleAdminLoginSubmit(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-wine-950 mb-1">E-mail do Administrador</label>
+            <input type="email" id="admin-auth-email" required placeholder="top10cargas@hotmail.com" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-wine-950 mb-1">Senha de Acesso</label>
+            <input type="password" id="admin-auth-password" required placeholder="••••••••" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800">
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-wine-900 hover:bg-wine-800 text-yellowbrand-300 font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition flex items-center justify-center gap-2 border border-wine-950">
+            <i data-lucide="shield-check" class="w-4 h-4 text-yellowbrand-400"></i>
+            Validar e Acessar Painel
+          </button>
+        </form>
+      </div>
+
+      <div class="p-3 bg-stone-50 border-t border-stone-200 text-center">
+        <button onclick="app.closeAdminAuthModal()" class="text-xs text-stone-500 hover:text-stone-800">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: ADMINISTRADOR ANALISA E FORMULA PROPOSTA -->
+  <!-- ======================================================== -->
+  <div id="modal-admin-proposal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-wine-200 overflow-hidden flex flex-col max-h-[92vh] animate-fade-in">
+      
+      <div class="p-5 bg-wine-950 text-white flex items-center justify-between border-b border-yellowbrand-400/20">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-yellowbrand-400 text-wine-950 rounded-xl font-bold">
+            <i data-lucide="calculator" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base">Top10Cargas - Análise Técnica & Emissão de Proposta</h3>
+            <p class="text-xs text-yellowbrand-200">Código: <span id="admin-modal-quote-id" class="font-mono text-white font-bold">COT-0000</span></p>
+          </div>
+        </div>
+        <button onclick="app.closeAdminProposalModal()" class="text-stone-400 hover:text-white p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="form-admin-proposal" onsubmit="app.handleAdminProposalSubmit(event)" class="p-6 overflow-y-auto space-y-5 text-xs text-stone-700">
+        
+        <!-- Ficha Técnica com Foto da Carga -->
+        <div class="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-3">
+          <div class="flex items-center justify-between border-b border-stone-200/80 pb-2">
+            <span class="font-bold text-wine-950 text-xs uppercase tracking-wider">Ficha Técnica da Carga</span>
+            <span id="admin-view-modality-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-wine-100 text-wine-900">Rodoviário</span>
+          </div>
+
+          <div id="admin-view-image-box" class="flex items-center gap-4 bg-white p-3 rounded-lg border border-stone-200">
+            <img id="admin-view-image-preview" src="" alt="Foto da Carga" class="w-20 h-20 object-cover rounded-lg border border-stone-300 shadow-sm cursor-pointer" onclick="window.open(this.src, '_blank')">
+            <div>
+              <span class="font-bold text-wine-950 text-xs flex items-center gap-1.5"><i data-lucide="image" class="w-3.5 h-3.5 text-wine-800"></i> Foto da Embalagem enviada pelo Cliente</span>
+              <p class="text-[11px] text-stone-500 mt-0.5">Analise a embalagem física para confirmar cubagem, fragilidade e tipo de estiba necessária.</p>
+              <span class="text-[10px] text-wine-800 hover:underline cursor-pointer font-bold" onclick="window.open(document.getElementById('admin-view-image-preview').src, '_blank')">Clique para ampliar a imagem ↗</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+            <div><strong class="text-stone-500">Cliente:</strong> <span id="admin-view-client"></span></div>
+            <div><strong class="text-stone-500">Volumes:</strong> <span id="admin-view-packages" class="font-bold text-wine-950"></span></div>
+            <div><strong class="text-stone-500">Peso Real:</strong> <span id="admin-view-weight"></span> kg</div>
+            <div><strong class="text-stone-500">Dimensões:</strong> <span id="admin-view-dimensions"></span></div>
+          </div>
+          <div class="pt-2 border-t border-stone-200/60 grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+            <div><strong class="text-stone-500">Origem:</strong> <span id="admin-view-origin"></span></div>
+            <div><strong class="text-stone-500">Destino:</strong> <span id="admin-view-destination"></span></div>
+          </div>
+          <div id="admin-view-reanalysis-box" class="hidden mt-2 p-2.5 bg-orange-50 border border-orange-200 rounded-lg text-orange-900">
+            <strong class="block text-[10px] uppercase font-bold text-orange-700">Observações do Cliente para Reanálise:</strong>
+            <span id="admin-view-reanalysis-text" class="italic"></span>
+          </div>
+        </div>
+
+        <!-- Proposta Econômica -->
+        <div class="space-y-3">
+          <h4 class="font-bold text-wine-950 text-sm">Condições Comerciais em Reais (R$)</h4>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="font-bold text-stone-800 block mb-1">Preço Total Proposto (R$ - BRL)</label>
+              <div class="relative">
+                <input type="number" id="admin-proposal-price" step="0.5" min="1" placeholder="Ex: 450.00" required class="w-full pl-10 pr-3 py-2 border border-stone-300 rounded-lg text-sm font-black text-wine-950 focus:outline-none focus:border-wine-800">
+                <span class="absolute left-3 top-2 text-xs font-bold text-stone-500">R$</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="font-bold text-stone-800 block mb-1">Prazo Estimado de Entrega</label>
+              <input type="text" id="admin-proposal-eta" placeholder="Ex: 24 a 48 horas (Aéreo) ou 3 a 4 dias (Rodoviário)" required class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <span class="text-stone-500 text-[10px] font-semibold">Frete Peso/Base (R$)</span>
+              <input type="number" id="admin-proposal-base" step="0.5" min="0" placeholder="Ex: 380" class="w-full px-2 py-1.5 border border-stone-300 rounded text-xs">
+            </div>
+            <div>
+              <span class="text-stone-500 text-[10px] font-semibold">Seguro de Carga (R$)</span>
+              <input type="number" id="admin-proposal-insurance" step="0.5" min="0" placeholder="Ex: 45" class="w-full px-2 py-1.5 border border-stone-300 rounded text-xs">
+            </div>
+            <div>
+              <span class="text-stone-500 text-[10px] font-semibold">Taxa de Coleta/GRIS (R$)</span>
+              <input type="number" id="admin-proposal-packaging" step="0.5" min="0" placeholder="Ex: 25" class="w-full px-2 py-1.5 border border-stone-300 rounded text-xs">
+            </div>
+          </div>
+
+          <div>
+            <label class="font-bold text-stone-800 block mb-1">Observações e Condições de Coleta para o Cliente</label>
+            <textarea id="admin-proposal-notes" rows="3" placeholder="Ex: Coleta inclusa no local de origem. Seguro total de transporte e comprovante de entrega com canhoto digitalizado." class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800"></textarea>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-stone-200 flex items-center justify-end gap-3">
+          <button type="button" onclick="app.closeAdminProposalModal()" class="px-4 py-2 font-semibold text-stone-600 hover:text-stone-800 transition">
+            Cancelar
+          </button>
+          <button type="submit" class="px-6 py-2.5 bg-wine-900 hover:bg-wine-800 text-yellowbrand-300 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg flex items-center gap-2 transition border border-wine-950">
+            <i data-lucide="send" class="w-4 h-4 text-yellowbrand-400"></i>
+            Enviar Proposta ao Cliente
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: CLIENTE PEDE REANÁLISE -->
+  <!-- ======================================================== -->
+  <div id="modal-reanalysis" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-orange-200 overflow-hidden p-6 animate-fade-in">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="p-2.5 bg-orange-100 text-orange-600 rounded-xl">
+          <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-stone-900 text-base">Solicitar Nova Análise</h3>
+          <p class="text-xs text-stone-500">Envie suas observações de prazo ou contraproposta em R$</p>
+        </div>
+      </div>
+
+      <form id="form-reanalysis" onsubmit="app.handleReanalysisSubmit(event)" class="space-y-4">
+        <input type="hidden" id="reanalysis-quote-id">
+        <div>
+          <label class="block text-xs font-semibold text-stone-700 mb-1">Qual ajuste você necessita?</label>
+          <textarea id="reanalysis-feedback" rows="4" required placeholder="Ex: Meu orçamento máximo para este envio é de R$ 400,00, ou preciso que a entrega ocorra até quinta-feira. É viável adequar?" class="w-full px-3 py-2 border border-stone-300 rounded-xl text-xs focus:outline-none focus:border-orange-500"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-2">
+          <button type="button" onclick="app.closeReanalysisModal()" class="px-4 py-2 text-xs font-semibold text-stone-500 hover:text-stone-800">
+            Voltar
+          </button>
+          <button type="submit" class="px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center gap-1.5">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            Enviar Solicitação de Reanálise
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: CLIENTE RECUSA PROPOSTA -->
+  <!-- ======================================================== -->
+  <div id="modal-deny-proposal" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-red-200 overflow-hidden p-6 animate-fade-in">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="p-2.5 bg-red-100 text-red-600 rounded-xl">
+          <i data-lucide="x-circle" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-stone-900 text-base">Recusar Proposta de Frete</h3>
+          <p class="text-xs text-stone-500">Confirmação de cancelamento da proposta</p>
+        </div>
+      </div>
+
+      <form id="form-deny-proposal" onsubmit="app.handleDenySubmit(event)" class="space-y-4">
+        <input type="hidden" id="deny-quote-id">
+        <div>
+          <label class="block text-xs font-semibold text-stone-700 mb-1">Motivo da recusa (opcional):</label>
+          <textarea id="deny-reason" rows="3" placeholder="Ex: Valor acima do orçamento / Envio cancelado pelo remetente / Opção por transportadora local." class="w-full px-3 py-2 border border-stone-300 rounded-xl text-xs focus:outline-none focus:border-red-500"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-2">
+          <button type="button" onclick="app.closeDenyModal()" class="px-4 py-2 text-xs font-semibold text-stone-500 hover:text-stone-800">
+            Voltar
+          </button>
+          <button type="submit" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center gap-1.5">
+            <i data-lucide="x" class="w-4 h-4"></i>
+            Confirmar Recusa
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: LOGIN / CADASTRO DE CLIENTE -->
+  <!-- ======================================================== -->
+  <div id="modal-auth" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-wine-200 overflow-hidden animate-fade-in">
+      <div class="grid grid-cols-2 border-b border-stone-200 text-center font-bold text-xs">
+        <button id="auth-tab-login-btn" onclick="app.switchAuthTab('login')" class="py-4 border-b-2 border-wine-900 text-wine-900 bg-wine-50/50">
+          Acessar Conta
+        </button>
+        <button id="auth-tab-register-btn" onclick="app.switchAuthTab('register')" class="py-4 border-b-2 border-transparent text-stone-500 hover:text-stone-800">
+          Criar Cadastro
+        </button>
+      </div>
+
+      <div class="p-6">
+        <div id="auth-error-message" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg flex items-center gap-2">
+          <i data-lucide="alert-triangle" class="w-4 h-4 flex-shrink-0"></i>
+          <span id="auth-error-text">Erro</span>
+        </div>
+
+        <form id="form-login" onsubmit="app.handleLoginSubmit(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-wine-950 mb-1">E-mail Cadastrado</label>
+            <input type="email" id="login-email" required placeholder="seu@email.com.br" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-wine-950 mb-1">Senha de Acesso</label>
+            <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800">
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-wine-900 hover:bg-wine-800 text-yellowbrand-300 font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition border border-wine-950">
+            Entrar no Portal
+          </button>
+          <div class="text-center mt-2">
+            <button type="button" onclick="app.openForgotPasswordModal()" class="text-xs text-wine-800 hover:underline font-semibold">Esqueceu a senha? Recuperar acesso</button>
+          </div>
+        </form>
+
+        <form id="form-register" onsubmit="app.handleRegisterSubmit(event)" class="hidden space-y-3">
+          <div>
+            <label class="block text-xs font-bold text-wine-950 mb-1">Nome Completo / Responsável</label>
+            <input type="text" id="reg-name" required placeholder="Ex: Lucas Silveira" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-wine-950 mb-1">E-mail Corporativo ou Pessoal</label>
+            <input type="email" id="reg-email" required placeholder="lucas@empresa.com.br" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-bold text-wine-950 mb-1">WhatsApp / Telefone</label>
+              <input type="tel" id="reg-phone" placeholder="(41) 99655-2323" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-wine-950 mb-1">Razão Social / Empresa</label>
+              <input type="text" id="reg-company" placeholder="Nome Fantasia / MEI" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-wine-950 mb-1 flex items-center gap-1.5">
+              <i data-lucide="id-card" class="w-3.5 h-3.5 text-wine-800"></i>
+              CPF ou CNPJ
+            </label>
+            <input type="text" id="reg-cpf-cnpj" required placeholder="CPF: 000.000.000-00  ou  CNPJ: 00.000.000/0000-00" maxlength="18" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800 font-mono tracking-wide" oninput="app.formatCpfCnpj(this)">
+            <p class="text-[10px] text-stone-400 mt-0.5">Pessoa Física (CPF) ou Pessoa Jurídica (CNPJ)</p>
+          </div>
+          <!-- Foto de Perfil Opcional no Cadastro -->
+          <div>
+            <label class="block text-xs font-bold text-wine-950 mb-1 flex items-center gap-1.5">
+              <i data-lucide="image" class="w-3.5 h-3.5 text-wine-800"></i>
+              Foto de Perfil (Opcional)
+            </label>
+            <div class="flex items-center gap-3">
+              <div id="reg-avatar-preview-box" class="w-12 h-12 rounded-xl bg-stone-100 border border-stone-300 flex items-center justify-center overflow-hidden text-stone-400 flex-shrink-0">
+                <i data-lucide="user" class="w-6 h-6" id="reg-avatar-placeholder"></i>
+                <img id="reg-avatar-preview" src="" alt="Avatar" class="hidden w-full h-full object-cover">
+              </div>
+              <div class="flex items-center gap-2">
+                <label class="cursor-pointer px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-stone-200 transition">
+                  <i data-lucide="upload" class="w-3.5 h-3.5 text-wine-800"></i>
+                  <span>Escolher Foto</span>
+                  <input type="file" id="reg-avatar-file" accept="image/*" class="hidden" onchange="app.handleRegisterAvatarSelected(event)">
+                </label>
+                <button type="button" id="reg-avatar-remove-btn" onclick="app.removeRegisterAvatar()" class="hidden text-xs text-rose-600 hover:underline">
+                  Remover
+                </button>
+              </div>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-wine-950 mb-1">Crie uma Senha</label>
+            <input type="password" id="reg-password" required placeholder="Crie uma senha forte" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800">
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-wine-900 hover:bg-wine-800 text-yellowbrand-300 font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition border border-wine-950">
+            Finalizar Cadastro
+          </button>
+        </form>
+      </div>
+
+      <div class="p-3 bg-stone-50 border-t border-stone-200 text-center">
+        <button onclick="app.closeAuthModal()" class="text-xs text-stone-500 hover:text-stone-800">
+          Fechar Janela
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: COMPROVANTE OFICIAL DE ENVIO (Imprimível) -->
+  <!-- ======================================================== -->
+  <div id="modal-quote-details" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[92vh] animate-fade-in">
+      <div class="p-4 bg-wine-950 text-white flex items-center justify-between border-b border-yellowbrand-400/30">
+        <span class="font-bold text-sm flex items-center gap-2">
+          <i data-lucide="file-text" class="w-4 h-4 text-yellowbrand-400"></i> Top10Cargas - Comprovante Oficial
+        </span>
+        <button onclick="app.closeQuoteDetailsModal()" class="text-stone-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="printable-receipt" class="p-6 overflow-y-auto space-y-4 text-xs"></div>
+
+      <div class="p-4 bg-stone-50 border-t border-stone-200 flex items-center justify-between">
+        <button onclick="window.print()" class="px-4 py-2 bg-yellowbrand-400 hover:bg-yellowbrand-300 text-wine-950 rounded-lg font-bold flex items-center gap-1.5 transition shadow-sm">
+          <i data-lucide="printer" class="w-4 h-4"></i> Imprimir Comprovante
+        </button>
+        <button onclick="app.closeQuoteDetailsModal()" class="px-4 py-2 bg-wine-950 text-white rounded-lg font-semibold">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- RODAPÉ COM IDENTIDADE TOP10 CARGAS -->
+  <!-- ======================================================== -->
+  <footer class="bg-[#2a010b] text-stone-300 text-xs py-10 border-t border-wine-950 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <span class="font-black text-white text-base tracking-tight">Top10 <span class="text-yellowbrand-400">Cargas</span></span>
+        <span class="text-wine-800">|</span>
+        <span>Logística Rodoviária e Aérea em Todo o Território Brasileiro</span>
+        <span class="text-wine-800">|</span>
+        <a href="https://top10cargas.com" target="_blank" class="text-yellowbrand-300 hover:underline font-bold">top10cargas.com</a>
+      </div>
+      <p class="text-stone-400">
+        © 2026 top10cargas.com. Todos os direitos reservados.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <!-- SheetJS para exportação Excel -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- MODAL: RECUPERAÇÃO DE SENHA (2 PASSOS) -->
+  <div id="modal-forgot-password" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-wine-200 overflow-hidden animate-fade-in">
+      <div class="p-5 bg-wine-950 text-white flex items-center justify-between border-b border-yellowbrand-400/30">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-yellowbrand-400 text-wine-950 rounded-xl">
+            <i data-lucide="key-round" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base">Recuperar Acesso</h3>
+            <p class="text-xs text-yellowbrand-200">Digite seu e-mail para receber o código</p>
+          </div>
+        </div>
+        <button onclick="app.closeForgotPasswordModal()" class="text-stone-400 hover:text-white p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6">
+        <div id="forgot-error-message" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg flex items-center gap-2">
+          <i data-lucide="alert-triangle" class="w-4 h-4 flex-shrink-0"></i>
+          <span id="forgot-error-text">Erro</span>
+        </div>
+
+        <!-- Passo 1: Solicitar código -->
+        <div id="forgot-step-1">
+          <p class="text-xs text-stone-600 mb-4">Informe o e-mail cadastrado na sua conta. Enviaremos um código de verificação de 6 dígitos.</p>
+          <form id="form-forgot-step1" onsubmit="app.handleSendResetCode(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-wine-950 mb-1">E-mail Cadastrado</label>
+              <input type="email" id="forgot-email" required placeholder="seu@email.com.br" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800">
+            </div>
+            <button type="submit" class="w-full py-2.5 bg-wine-900 hover:bg-wine-800 text-yellowbrand-300 font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition border border-wine-950">
+              Enviar Código de Verificação
+            </button>
+          </form>
+        </div>
+
+        <!-- Passo 2: Confirmar código e nova senha -->
+        <div id="forgot-step-2" class="hidden">
+          <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl mb-4">
+            <p class="text-xs text-emerald-800 font-bold flex items-center gap-2">
+              <i data-lucide="mail-check" class="w-4 h-4"></i>
+              Código enviado para seu e-mail!
+            </p>
+            <p class="text-xs text-emerald-700 mt-1">Verifique sua caixa de entrada. O código expira em 10 minutos.</p>
+            <div id="forgot-code-display" class="mt-3 p-3 bg-white border-2 border-emerald-400 rounded-lg text-center">
+              <p class="text-[10px] text-stone-500 uppercase font-bold">Código de Verificação (simulado):</p>
+              <p id="forgot-code-value" class="text-3xl font-black text-wine-950 tracking-[0.3em] mt-1">------</p>
+            </div>
+          </div>
+          <form id="form-forgot-step2" onsubmit="app.handleConfirmResetCode(event)" class="space-y-3">
+            <div>
+              <label class="block text-xs font-bold text-wine-950 mb-1">Código de 6 Dígitos</label>
+              <input type="text" id="forgot-code-input" required placeholder="000000" maxlength="6" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs font-mono text-center tracking-widest text-lg focus:outline-none focus:border-wine-800">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-wine-950 mb-1">Nova Senha</label>
+              <input type="password" id="forgot-new-password" required placeholder="Crie uma nova senha" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-wine-950 mb-1">Confirmar Nova Senha</label>
+              <input type="password" id="forgot-confirm-password" required placeholder="Repita a nova senha" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800">
+            </div>
+            <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition">
+              Confirmar e Redefinir Senha
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="p-3 bg-stone-50 border-t border-stone-200 text-center">
+        <button onclick="app.closeForgotPasswordModal()" class="text-xs text-stone-500 hover:text-stone-800">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
