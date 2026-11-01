@@ -1,0 +1,123 @@
+/* ========================================================
+   TOP10 CARGAS - Identidade Visual Oficial
+   Paleta de Cores: Vermelho Vinho (Wine Red), Amarelo e Branco
+   ======================================================== */
+
+:root {
+  --primary: #881337;         /* Vermelho Vinho Base */
+  --primary-dark: #5c061d;    /* Vermelho Vinho Escuro / Bordô */
+  --primary-light: #9f1239;   /* Vermelho Vinho Claro */
+  --primary-hover: #700e2b;
+  --accent-yellow: #facc15;   /* Amarelo Vibrante */
+  --accent-yellow-dark: #eab308;
+  --accent-yellow-light: #fef08a;
+  --bg-wine-soft: #fff1f2;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #1e293b;
+  background-color: #fafaf9;
+  overflow-x: hidden;
+}
+
+/* Efeitos Glassmorphism com tonalidade Vinho & Amarelo */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(136, 19, 55, 0.15);
+}
+
+.glass-card-wine {
+  background: rgba(92, 6, 29, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(250, 204, 21, 0.3);
+}
+
+/* Badges de Status Personalizados */
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.badge-pendiente {
+  background-color: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fde047;
+}
+
+.badge-propuesta {
+  background-color: #fff1f2;
+  color: #881337;
+  border: 1px solid #fecdd3;
+}
+
+.badge-aceptada {
+  background-color: #fef08a;
+  color: #713f12;
+  border: 1px solid #facc15;
+}
+
+.badge-denegada {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.badge-reanalisis {
+  background-color: #ffedd5;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+}
+
+.badge-completado {
+  background-color: #881337;
+  color: #ffffff;
+  border: 1px solid #5c061d;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  background-color: rgba(63, 4, 18, 0.75);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  transition: opacity 0.25s ease-in-out;
+}
+
+/* Aviso Oficial "Cotação sujeita a análise" */
+.notice-sujeta-analisis {
+  background: linear-gradient(135deg, #fff1f2 0%, #fef9c3 100%);
+  border-left: 5px solid #881337;
+}
+
+/* Barra Demo */
+.role-demo-bar {
+  background: #3f0412;
+  color: #fef08a;
+  border-bottom: 1px solid #5c061d;
+}
+
+/* Impressão de Comprovantes */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-receipt, #printable-receipt * {
+    visibility: visible;
+  }
+  #printable-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
