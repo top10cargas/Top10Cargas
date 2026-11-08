@@ -5,6 +5,8 @@
  * Upload de imagem da caixa e rastreamento contínuo de entregas em tempo real
  */
 
+window.lucide = window.lucide || { createIcons: () => {} };
+
 class App {
   constructor() {
     this.currentView = 'landing';
@@ -26,20 +28,41 @@ class App {
     this.init();
   }
 
+  createIcons() {
+    if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+      try {
+        if (lucide.icons && Object.keys(lucide.icons).length > 0) {
+          lucide.createIcons({ icons: lucide.icons });
+        } else {
+          lucide.createIcons();
+        }
+      } catch (e) {
+        console.warn('Lucide icon rendering error:', e);
+      }
+    }
+  }
+
   init() {
     window.logixStore.subscribe(() => {
       this.render();
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
+    const runSetup = () => {
       this.setupEventListeners();
       this.render();
-      lucide.createIcons();
+      this.createIcons();
 
       // Solicitar permissão para notificações push de desktop em segundo plano
       document.addEventListener('click', () => {
         this.requestNotificationPermission();
       }, { once: true });
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', runSetup);
+    } else {
+      runSetup();
+    }
 
       // Escuta em tempo real quando qualquer aba ou cliente submeter uma nova cotação
       window.addEventListener('storage', (event) => {
@@ -121,40 +144,18 @@ class App {
           }
         }
       }, 30000);
-    });
 
     // Inicia a visualização respeitando a sessão ativa do usuário (sem forçar logout)
     this.navigateTo('landing');
   }
 
   setupEventListeners() {
-    // Alternância de Perfil
-    document.getElementById('btn-role-visitor')?.addEventListener('click', () => {
-      window.logixStore.switchRole('guest');
-      this.navigateTo('landing');
-      this.showToast('Modo Visitante ativado (Landing pública)', 'info');
-    });
-
-    document.getElementById('btn-role-client')?.addEventListener('click', () => {
-      window.logixStore.switchRole('client');
-      this.navigateTo('client_dashboard');
-      this.showToast('Modo Cliente ativado (Lucas Silveira)', 'success');
-    });
-
-    document.getElementById('btn-reset-demo')?.addEventListener('click', () => {
-      if (confirm('Deseja restaurar todos os dados e cotações de demonstração?')) {
-        window.logixStore.resetToDemo();
-        this.navigateTo('client_dashboard');
-        this.showToast('Dados de teste restaurados com sucesso!', 'info');
-      }
-    });
-
     // Dropdown Notificações
     const notifBtn = document.getElementById('btn-notifications-toggle');
     const notifDropdown = document.getElementById('notifications-dropdown');
     notifBtn?.addEventListener('click', (e) => {
       e.stopPropagation();
-      notifDropdown.classList.toggle('hidden');
+      notifDropdown?.classList.toggle('hidden');
     });
 
     document.addEventListener('click', (e) => {
@@ -165,7 +166,44 @@ class App {
 
     document.getElementById('btn-mark-all-read')?.addEventListener('click', () => {
       window.logixStore.markAllNotificationsRead(window.logixStore.currentUser);
+      this.renderNotifications();
       this.showToast('Notificações marcadas como lidas', 'info');
+    });
+
+    // Fechar modais ao clicar no backdrop escuro
+    document.querySelectorAll('.modal-overlay, #modal-edit-password, #modal-admin-phone').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.add('hidden');
+        }
+      });
+    });
+
+    // Fechar modais e dropdowns com tecla ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.closeAllModals();
+        notifDropdown?.classList.add('hidden');
+      }
+    });
+  }
+
+  closeAllModals() {
+    const modalIds = [
+      'modal-quote-form',
+      'modal-sujeta-analisis',
+      'modal-admin-auth',
+      'modal-admin-proposal',
+      'modal-reanalysis',
+      'modal-deny-proposal',
+      'modal-auth',
+      'modal-quote-details',
+      'modal-forgot-password',
+      'modal-edit-password',
+      'modal-admin-phone'
+    ];
+    modalIds.forEach(id => {
+      document.getElementById(id)?.classList.add('hidden');
     });
   }
 
@@ -183,7 +221,7 @@ class App {
     document.getElementById('admin-auth-password').value = '';
     document.getElementById('admin-auth-error-message').classList.add('hidden');
     document.getElementById('modal-admin-auth').classList.remove('hidden');
-    lucide.createIcons();
+    this.createIcons();
   }
 
   closeAdminAuthModal() {
@@ -253,12 +291,11 @@ class App {
       this.renderAdminDashboard();
     }
 
-    lucide.createIcons();
+    this.createIcons();
   }
 
   renderNavbar() {
     const user = window.logixStore.currentUser;
-    const badge = document.getElementById('current-role-badge');
     const guestNav = document.getElementById('nav-auth-guest');
     const clientNav = document.getElementById('nav-auth-client');
     const adminNav = document.getElementById('nav-auth-admin');
@@ -266,18 +303,10 @@ class App {
     const clientNavAvatar = document.getElementById('nav-client-avatar');
 
     if (!user) {
-      if (badge) {
-        badge.textContent = 'Visitante Público';
-        badge.className = 'bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700';
-      }
       guestNav?.classList.remove('hidden');
       clientNav?.classList.add('hidden');
       adminNav?.classList.add('hidden');
     } else if (user.role === 'admin') {
-      if (badge) {
-        badge.textContent = `Administrador (${user.name})`;
-        badge.className = 'bg-amber-950 text-amber-300 px-2 py-0.5 rounded border border-amber-800';
-      }
       guestNav?.classList.add('hidden');
       clientNav?.classList.add('hidden');
       adminNav?.classList.remove('hidden');
@@ -293,10 +322,6 @@ class App {
         }
       }
     } else {
-      if (badge) {
-        badge.textContent = `Cliente (${user.name})`;
-        badge.className = 'bg-wine-950 text-yellowbrand-300 px-2 py-0.5 rounded border border-wine-800 font-semibold';
-      }
       guestNav?.classList.add('hidden');
       clientNav?.classList.remove('hidden');
       adminNav?.classList.add('hidden');
@@ -323,11 +348,13 @@ class App {
 
     const unreadCount = notifs.filter(n => !n.read).length;
 
-    if (unreadCount > 0) {
-      badgeCount.textContent = unreadCount;
-      badgeCount.classList.remove('hidden');
-    } else {
-      badgeCount.classList.add('hidden');
+    if (badgeCount) {
+      if (unreadCount > 0) {
+        badgeCount.textContent = unreadCount;
+        badgeCount.classList.remove('hidden');
+      } else {
+        badgeCount.classList.add('hidden');
+      }
     }
 
     if (!listContainer) return;
@@ -994,7 +1021,7 @@ class App {
     `).join('');
 
     this.renderAdminHistoryPagination(paginated);
-    lucide.createIcons();
+    this.createIcons();
   }
 
   setAdminHistoryPage(page) {
@@ -1043,9 +1070,7 @@ class App {
         </button>
       </div>
     `;
-  }
-
-    lucide.createIcons();
+    this.createIcons();
   }
 
   // --- UPLOAD DE IMAGEM DA CAIXA ---
@@ -1124,7 +1149,7 @@ class App {
     }
 
     this.calculateVolumePreview();
-    lucide.createIcons();
+    this.createIcons();
   }
 
   closeQuoteFormModal() {
@@ -1305,7 +1330,7 @@ class App {
     );
 
     document.getElementById('modal-sujeta-analisis').classList.remove('hidden');
-    lucide.createIcons();
+    this.createIcons();
   }
 
   closeSujetaAnalisisModal(goToDashboard = false) {
@@ -1384,7 +1409,7 @@ class App {
     }
 
     document.getElementById('modal-admin-proposal').classList.remove('hidden');
-    lucide.createIcons();
+    this.createIcons();
   }
 
   closeAdminProposalModal() {
@@ -1423,7 +1448,7 @@ class App {
     document.getElementById('deny-quote-id').value = quoteId;
     document.getElementById('deny-reason').value = '';
     document.getElementById('modal-deny-proposal').classList.remove('hidden');
-    lucide.createIcons();
+    this.createIcons();
   }
 
   closeDenyModal() {
@@ -1444,7 +1469,7 @@ class App {
     document.getElementById('reanalysis-quote-id').value = quoteId;
     document.getElementById('reanalysis-feedback').value = '';
     document.getElementById('modal-reanalysis').classList.remove('hidden');
-    lucide.createIcons();
+    this.createIcons();
   }
 
   closeReanalysisModal() {
@@ -1597,7 +1622,7 @@ class App {
     `;
 
     document.getElementById('modal-quote-details').classList.remove('hidden');
-    lucide.createIcons();
+    this.createIcons();
   }
 
   closeQuoteDetailsModal() {
@@ -1609,7 +1634,7 @@ class App {
     document.getElementById('modal-auth').classList.remove('hidden');
     document.getElementById('auth-error-message').classList.add('hidden');
     this.switchAuthTab(tab);
-    lucide.createIcons();
+    this.createIcons();
     setTimeout(() => {
       if (tab === 'login') {
         document.getElementById('login-email')?.focus();
@@ -1629,7 +1654,7 @@ class App {
     const isPassword = input.type === 'password';
     input.type = isPassword ? 'text' : 'password';
     btn.innerHTML = `<i data-lucide="${isPassword ? 'eye-off' : 'eye'}" class="w-4 h-4"></i>`;
-    lucide.createIcons();
+    this.createIcons();
   }
 
   switchAuthTab(tab) {
@@ -1649,7 +1674,7 @@ class App {
       registerForm.classList.remove('hidden');
       loginForm.classList.add('hidden');
     }
-    lucide.createIcons();
+    this.createIcons();
   }
 
   handleLoginSubmit(e) {
@@ -1731,7 +1756,7 @@ class App {
     if (tab === 'chat') {
       this.renderClientChat();
     }
-    lucide.createIcons();
+    this.createIcons();
   }
 
   setAdminTab(tab) {
@@ -1776,7 +1801,7 @@ class App {
     if (tab === 'chat') this.renderAdminChat();
     if (tab === 'phones') this.renderAdminPhones();
 
-    lucide.createIcons();
+    this.createIcons();
   }
 
   // --- EXPORTAÇÃO CSV ---
@@ -1884,7 +1909,7 @@ class App {
     toast.className = `fixed bottom-6 right-6 z-50 ${bg} px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold animate-fade-in border border-white/10`;
     toast.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4"></i> <span>${this.escapeHtml(message)}</span>`;
     document.body.appendChild(toast);
-    lucide.createIcons();
+    this.createIcons();
 
     setTimeout(() => {
       toast.style.transition = 'opacity 0.4s ease';
@@ -1919,7 +1944,7 @@ class App {
     document.getElementById('forgot-step-2').classList.add('hidden');
     document.getElementById('forgot-error-message').classList.add('hidden');
     document.getElementById('forgot-email').value = '';
-    lucide.createIcons();
+    this.createIcons();
   }
 
   closeForgotPasswordModal() {
@@ -1935,7 +1960,7 @@ class App {
       document.getElementById('forgot-step-1').classList.add('hidden');
       document.getElementById('forgot-step-2').classList.remove('hidden');
       document.getElementById('forgot-error-message').classList.add('hidden');
-      lucide.createIcons();
+      this.createIcons();
     } catch (err) {
       document.getElementById('forgot-error-text').textContent = err.message;
       document.getElementById('forgot-error-message').classList.remove('hidden');
@@ -2033,7 +2058,7 @@ class App {
               <i data-lucide="shield-minus" class="w-3.5 h-3.5"></i> Remover Admin
             </button>
           `}
-          <button onclick="app.openEditPasswordModal('${u.id}', '${this.escapeHtml(u.name)}')" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold rounded-lg flex items-center gap-1 transition" title="Editar senha desta conta">
+          <button onclick="app.openEditPasswordModal('${u.id}')" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold rounded-lg flex items-center gap-1 transition" title="Editar senha desta conta">
             <i data-lucide="key" class="w-3.5 h-3.5"></i> Editar Senha
           </button>
           <button onclick="app.actionDeleteUser('${u.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold rounded-lg flex items-center gap-1 transition" title="Excluir Conta Permanentemente">
@@ -2042,7 +2067,7 @@ class App {
         </div>
       </div>
     `).join('');
-    lucide.createIcons();
+    this.createIcons();
   }
 
   actionPromoteUser(userId) {
@@ -2080,14 +2105,16 @@ class App {
     }
   }
 
-  openEditPasswordModal(userId, userName) {
+  openEditPasswordModal(userId, userName = null) {
+    const user = window.logixStore.users.find(u => u.id === userId);
+    const resolvedName = userName || (user ? user.name : userId);
     document.getElementById('edit-password-user-id').value = userId;
-    document.getElementById('edit-password-user-name').textContent = userName;
+    document.getElementById('edit-password-user-name').textContent = resolvedName;
     document.getElementById('edit-password-new').value = '';
     document.getElementById('edit-password-confirm').value = '';
     document.getElementById('edit-password-error').classList.add('hidden');
     document.getElementById('modal-edit-password').classList.remove('hidden');
-    lucide.createIcons();
+    this.createIcons();
   }
 
   closeEditPasswordModal() {
@@ -2248,7 +2275,7 @@ class App {
       }
     }
 
-    lucide.createIcons();
+    this.createIcons();
   }
 
   exportFinancialExcel() {
@@ -2473,7 +2500,7 @@ class App {
       webhookInput.value = window.logixStore.getAdminWebhookUrl();
     }
 
-    lucide.createIcons();
+    this.createIcons();
   }
 
   setAdminPhoneAlertsPage(page) {
@@ -2522,9 +2549,7 @@ class App {
         </button>
       </div>
     `;
-  }
-
-    lucide.createIcons();
+    this.createIcons();
   }
 
   openAdminPhoneModal() {
@@ -2532,7 +2557,7 @@ class App {
     document.getElementById('admin-phone-error').classList.add('hidden');
     document.getElementById('admin-phone-name').value = '';
     document.getElementById('admin-phone-number').value = '';
-    lucide.createIcons();
+    this.createIcons();
   }
 
   closeAdminPhoneModal() {
@@ -2753,6 +2778,7 @@ class App {
   toggleFloatingChat() {
     const user = window.logixStore.currentUser;
     if (!user) {
+      this.showToast('Faça login ou cadastre-se para abrir o chat de suporte.', 'info');
       this.openAuthModal('login');
       return;
     }
@@ -2837,7 +2863,7 @@ class App {
     }
 
     container.scrollTop = container.scrollHeight;
-    lucide.createIcons();
+    this.createIcons();
   }
 
   handleFloatingSendMessage(e) {
@@ -2880,6 +2906,24 @@ class App {
       } else {
         this.openClientChatTab();
       }
+    } else {
+      if (this.currentView !== 'landing') {
+        e.preventDefault();
+        this.navigateTo('landing');
+        setTimeout(() => {
+          document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' });
+        }, 80);
+      }
+    }
+  }
+
+  handleNavServicosClick(e) {
+    if (this.currentView !== 'landing') {
+      e.preventDefault();
+      this.navigateTo('landing');
+      setTimeout(() => {
+        document.getElementById('servicos')?.scrollIntoView({ behavior: 'smooth' });
+      }, 80);
     }
   }
 
@@ -2974,7 +3018,7 @@ class App {
     if (scrollToBottom) {
       container.scrollTop = container.scrollHeight;
     }
-    lucide.createIcons();
+    this.createIcons();
   }
 
   loadMoreClientMessages() {
@@ -3003,7 +3047,7 @@ class App {
     this.showToast('Mensagem enviada!', 'info');
   }
 
-  renderAdminChat() {
+  renderAdminChat(scrollToBottom = true) {
     const conversations = window.logixStore.getConversationsForAdmin();
     const contactsListEl = document.getElementById('admin-chat-contacts-list');
     const totalEl = document.getElementById('admin-chat-total-clients');
@@ -3155,7 +3199,7 @@ class App {
     if (scrollToBottom) {
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
-    lucide.createIcons();
+    this.createIcons();
   }
 
   loadMoreAdminMessages() {

@@ -12,45 +12,47 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind CSS Local -->
+  <script src="js/tailwind.js"></script>
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-          colors: {
-            wine: {
-              50: '#fff1f2',
-              100: '#ffe4e6',
-              200: '#fecdd3',
-              300: '#fda4af',
-              600: '#e11d48',
-              700: '#be123c',
-              800: '#9f1239',
-              900: '#881337',
-              950: '#4c0519',
-              dark: '#36020f'
+    if (typeof tailwind !== 'undefined') {
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
             },
-            yellowbrand: {
-              50: '#fefce8',
-              100: '#fef9c3',
-              200: '#fef08a',
-              300: '#fde047',
-              400: '#facc15',
-              500: '#eab308',
-              600: '#ca8a04',
+            colors: {
+              wine: {
+                50: '#fff1f2',
+                100: '#ffe4e6',
+                200: '#fecdd3',
+                300: '#fda4af',
+                600: '#e11d48',
+                700: '#be123c',
+                800: '#9f1239',
+                900: '#881337',
+                950: '#4c0519',
+                dark: '#36020f'
+              },
+              yellowbrand: {
+                50: '#fefce8',
+                100: '#fef9c3',
+                200: '#fef08a',
+                300: '#fde047',
+                400: '#facc15',
+                500: '#eab308',
+                600: '#ca8a04',
+              }
             }
           }
         }
-      }
+      };
     }
   </script>
 
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Lucide Icons Local -->
+  <script src="js/lucide.min.js"></script>
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="css/styles.css">
@@ -118,7 +120,7 @@
 
       <!-- Links de Navegação Pública -->
       <nav id="nav-links-public" class="hidden md:flex items-center gap-6 text-sm font-semibold text-stone-700">
-        <a href="#servicos" class="hover:text-wine-800 transition">Serviços</a>
+        <a href="#servicos" onclick="app.handleNavServicosClick(event)" class="hover:text-wine-800 transition">Serviços</a>
         <a href="#contato" onclick="app.handleNavContatoClick(event)" class="hover:text-wine-800 transition">Fale Conosco</a>
       </nav>
 
@@ -225,7 +227,7 @@
                 <i data-lucide="calculator" class="w-5 h-5"></i>
                 Solicitar Cotação de Frete
               </button>
-              <a href="#servicos" class="w-full sm:w-auto px-6 py-4 bg-wine-950/70 hover:bg-wine-950 text-white font-bold text-base rounded-xl border border-yellowbrand-400/30 transition flex items-center justify-center gap-2">
+              <a href="#servicos" onclick="app.handleNavServicosClick(event)" class="w-full sm:w-auto px-6 py-4 bg-wine-950/70 hover:bg-wine-950 text-white font-bold text-base rounded-xl border border-yellowbrand-400/30 transition flex items-center justify-center gap-2">
                 <i data-lucide="compass" class="w-5 h-5 text-yellowbrand-400"></i>
                 Nossos Serviços
               </a>
