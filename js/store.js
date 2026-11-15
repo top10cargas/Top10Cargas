@@ -21,7 +21,35 @@ const STORAGE_KEYS = {
   TEMP_CACHE: 'top10cargas_temp_cache',
   LAST_CLEANUP: 'top10cargas_last_cleanup',
   RETENTION_CONFIG: 'top10cargas_retention_config',
-  ADMIN_WEBHOOK: 'top10cargas_admin_webhook'
+  ADMIN_WEBHOOK: 'top10cargas_admin_webhook',
+  SERVER_URL: 'top10cargas_server_url',
+  SERVER_ENABLED: 'top10cargas_server_enabled'
+};
+
+const SERVER_CONFIG = {
+  getUrl() {
+    const custom = localStorage.getItem(STORAGE_KEYS.SERVER_URL);
+    if (custom && custom.trim()) {
+      return custom.trim().replace(/\/+$/, '');
+    }
+    if (typeof window !== 'undefined' && window.location && window.location.protocol.startsWith('http')) {
+      return window.location.origin + '/api';
+    }
+    return 'https://top10cargas.com/api';
+  },
+  setUrl(url) {
+    if (url && url.trim()) {
+      localStorage.setItem(STORAGE_KEYS.SERVER_URL, url.trim().replace(/\/+$/, ''));
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.SERVER_URL);
+    }
+  },
+  isEnabled() {
+    return localStorage.getItem(STORAGE_KEYS.SERVER_ENABLED) !== 'false';
+  },
+  setEnabled(enabled) {
+    localStorage.setItem(STORAGE_KEYS.SERVER_ENABLED, enabled ? 'true' : 'false');
+  }
 };
 
 // Fallback de segurança caso staticData.js não seja carregado antes
@@ -74,6 +102,9 @@ class Store {
     };
 
     this.lastCleanup = null;
+    this.serverConfig = SERVER_CONFIG;
+    this.serverOnline = false;
+    this.serverLastSync = null;
     this.init();
   }
 
@@ -115,6 +146,9 @@ class Store {
       this.saveQuotes();
     }
     this.syncUsersFromQuotes();
+
+    // 2.1 Sincronização em background com o Servidor Próprio
+    this.syncWithServer().catch(() => {});
 
     // 3. Carregar usuário logado
     const savedUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
@@ -230,6 +264,244 @@ class Store {
         try { this.tempCache = JSON.parse(event.newValue); } catch (e) { /* ignorar */ }
       }
     });
+  }
+
+  // ========================================================
+  // SINCRONIZAÇÃO COM SERVIDOR PRÓPRIO
+  // ========================================================
+
+  async syncWithServer() {
+    if (!this.serverConfig.isEnabled()) {
+      this.serverOnline = false;
+      return false;
+    }
+    const baseUrl = this.serverConfig.getUrl();
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const healthRes = await fetch(`${baseUrl}/health.php`, { signal: controller.signal }).catch(() => null);
+      clearTimeout(timeoutId);
+
+      if (!healthRes || !healthRes.ok) {
+        this.serverOnline = false;
+        return false;
+      }
+
+      this.serverOnline = true;
+      this.serverLastSync = new Date().toISOString();
+
+      // 1. Sincroniza usuários do servidor
+      try {
+        const usersRes = await fetch(`${baseUrl}/users.php`);
+        if (usersRes.ok) {
+          const uData = await usersRes.json();
+          if (uData && Array.isArray(uData.users)) {
+            const staticData = getStaticSource();
+            const adminEmail = (staticData.ADMIN_CREDENTIALS.email || '').toLowerCase();
+            const serverUsers = uData.users.filter(u => u && u.email && u.email.toLowerCase() !== adminEmail);
+
+            serverUsers.forEach(su => {
+              const localIdx = this.users.findIndex(lu => lu.id === su.id || (lu.email && lu.email.toLowerCase() === su.email.toLowerCase()));
+              if (localIdx >= 0) {
+                this.users[localIdx] = Object.assign({}, this.users[localIdx], su);
+              } else {
+                this.users.push(su);
+              }
+            });
+            this.ensureAdminUser();
+            this.saveUsers();
+          }
+        }
+      } catch (err) {
+        console.warn('Erro ao sincronizar usuários do servidor:', err);
+      }
+
+      // 2. Sincroniza cotações do servidor
+      try {
+        const quotesRes = await fetch(`${baseUrl}/quotes.php`);
+        if (quotesRes.ok) {
+          const qData = await quotesRes.json();
+          if (qData && Array.isArray(qData.quotes)) {
+            qData.quotes.forEach(sq => {
+              const localIdx = this.quotes.findIndex(lq => lq.id === sq.id);
+              if (localIdx >= 0) {
+                this.quotes[localIdx] = Object.assign({}, this.quotes[localIdx], sq);
+              } else {
+                this.quotes.unshift(sq);
+              }
+            });
+            this.saveQuotes();
+          }
+        }
+      } catch (err) {
+        console.warn('Erro ao sincronizar cotações do servidor:', err);
+      }
+
+      // 3. Sincroniza mensagens do servidor
+      try {
+        const msgsRes = await fetch(`${baseUrl}/messages.php`);
+        if (msgsRes.ok) {
+          const mData = await msgsRes.json();
+          if (mData && Array.isArray(mData.messages)) {
+            mData.messages.forEach(sm => {
+              const localIdx = this.messages.findIndex(lm => lm.id === sm.id);
+              if (localIdx >= 0) {
+                this.messages[localIdx] = Object.assign({}, this.messages[localIdx], sm);
+              } else {
+                this.messages.push(sm);
+              }
+            });
+            this.saveMessages();
+          }
+        }
+      } catch (err) {
+        console.warn('Erro ao sincronizar mensagens do servidor:', err);
+      }
+
+      this.syncUsersFromQuotes();
+      this.notifyListeners();
+      return true;
+    } catch (e) {
+      this.serverOnline = false;
+      return false;
+    }
+  }
+
+  async checkServerHealth(targetUrl = null) {
+    const baseUrl = (targetUrl && targetUrl.trim())
+      ? targetUrl.trim().replace(/\/+$/, '')
+      : this.serverConfig.getUrl();
+
+    if (!baseUrl) {
+      this.serverOnline = false;
+      return { ok: false, error: 'URL do servidor não configurada.' };
+    }
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      const res = await fetch(`${baseUrl}/health.php`, {
+        signal: controller.signal,
+        cache: 'no-store'
+      }).catch(err => {
+        throw new Error(err.name === 'AbortError' ? 'Tempo de resposta excedido (timeout 4s)' : (err.message || 'Falha de rede'));
+      });
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        this.serverOnline = false;
+        return { ok: false, status: res.status, error: `Servidor retornou status HTTP ${res.status}` };
+      }
+
+      const data = await res.json();
+      this.serverOnline = true;
+      this.serverLastSync = new Date().toISOString();
+      return { ok: true, data };
+    } catch (err) {
+      this.serverOnline = false;
+      return { ok: false, error: err.message || 'Falha na conexão' };
+    }
+  }
+
+  async pushUserToServer(userData) {
+    if (!this.serverConfig.isEnabled()) return;
+    const baseUrl = this.serverConfig.getUrl();
+    try {
+      await fetch(`${baseUrl}/users.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+      this.serverOnline = true;
+    } catch (e) {
+      console.warn('Servidor indisponível no momento, usuário armazenado localmente:', e);
+    }
+  }
+
+  async pushQuoteToServer(quoteData) {
+    if (!this.serverConfig.isEnabled()) return;
+    const baseUrl = this.serverConfig.getUrl();
+    try {
+      await fetch(`${baseUrl}/quotes.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(quoteData)
+      });
+      this.serverOnline = true;
+    } catch (e) {
+      console.warn('Servidor indisponível no momento, cotação armazenada localmente:', e);
+    }
+  }
+
+  async updateQuoteOnServer(quoteId, updates) {
+    if (!this.serverConfig.isEnabled()) return;
+    const baseUrl = this.serverConfig.getUrl();
+    try {
+      await fetch(`${baseUrl}/quotes.php?id=${encodeURIComponent(quoteId)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      });
+      this.serverOnline = true;
+    } catch (e) {
+      console.warn('Servidor indisponível no momento para atualizar cotação:', e);
+    }
+  }
+
+  async updateUserOnServer(userId, updates) {
+    if (!this.serverConfig.isEnabled()) return;
+    const baseUrl = this.serverConfig.getUrl();
+    try {
+      await fetch(`${baseUrl}/users.php?id=${encodeURIComponent(userId)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      });
+      this.serverOnline = true;
+    } catch (e) {
+      console.warn('Servidor indisponível no momento para atualizar usuário:', e);
+    }
+  }
+
+  async deleteUserOnServer(userId) {
+    if (!this.serverConfig.isEnabled()) return;
+    const baseUrl = this.serverConfig.getUrl();
+    try {
+      await fetch(`${baseUrl}/users.php?id=${encodeURIComponent(userId)}`, {
+        method: 'DELETE'
+      });
+      this.serverOnline = true;
+    } catch (e) {
+      console.warn('Servidor indisponível no momento para excluir usuário:', e);
+    }
+  }
+
+  async deleteQuoteOnServer(quoteId) {
+    if (!this.serverConfig.isEnabled()) return;
+    const baseUrl = this.serverConfig.getUrl();
+    try {
+      await fetch(`${baseUrl}/quotes.php?id=${encodeURIComponent(quoteId)}`, {
+        method: 'DELETE'
+      });
+      this.serverOnline = true;
+    } catch (e) {
+      console.warn('Servidor indisponível no momento para excluir cotação:', e);
+    }
+  }
+
+  async pushMessageToServer(msgData) {
+    if (!this.serverConfig.isEnabled()) return;
+    const baseUrl = this.serverConfig.getUrl();
+    try {
+      await fetch(`${baseUrl}/messages.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(msgData)
+      });
+      this.serverOnline = true;
+    } catch (e) {
+      console.warn('Servidor indisponível no momento para salvar mensagem:', e);
+    }
   }
 
   ensureAdminUser() {
@@ -911,6 +1183,7 @@ class Store {
     this.saveUsers();
     this.currentUser = newUser;
     this.saveCurrentUser();
+    this.pushUserToServer(newUser);
     return newUser;
   }
 
@@ -1101,6 +1374,11 @@ class Store {
     this.quotes.unshift(newQuote);
     this.saveQuotes();
 
+    if (clientUser) {
+      this.pushUserToServer(clientUser);
+    }
+    this.pushQuoteToServer(newQuote);
+
     const modalidadeTexto = newQuote.modality === 'aereo' ? 'Aéreo' : 'Rodoviário';
     this.addNotification(
       'all_admins',
@@ -1140,6 +1418,11 @@ class Store {
     });
 
     this.saveQuotes();
+    this.updateQuoteOnServer(quote.id, {
+      status: quote.status,
+      proposal: quote.proposal,
+      history: quote.history
+    });
 
     this.addNotification(
       quote.clientId,
@@ -1169,6 +1452,11 @@ class Store {
     });
 
     this.saveQuotes();
+    this.updateQuoteOnServer(quote.id, {
+      status: quote.status,
+      proposal: quote.proposal,
+      history: quote.history
+    });
 
     this.addNotification(
       'all_admins',
@@ -1198,6 +1486,11 @@ class Store {
     });
 
     this.saveQuotes();
+    this.updateQuoteOnServer(quote.id, {
+      status: quote.status,
+      proposal: quote.proposal,
+      history: quote.history
+    });
 
     this.addNotification(
       'all_admins',
@@ -1225,6 +1518,11 @@ class Store {
     });
 
     this.saveQuotes();
+    this.updateQuoteOnServer(quote.id, {
+      status: quote.status,
+      proposal: quote.proposal,
+      history: quote.history
+    });
 
     this.addNotification(
       'all_admins',
@@ -1270,6 +1568,11 @@ class Store {
     });
 
     this.saveQuotes();
+    this.updateQuoteOnServer(quote.id, {
+      status: quote.status,
+      proposal: quote.proposal,
+      history: quote.history
+    });
 
     this.addNotification(
       quote.clientId,
@@ -1354,12 +1657,14 @@ class Store {
     user.password = (newPassword || '').trim();
     delete this.resetCodes[clean];
     this.saveUsers();
+    this.updateUserOnServer(user.id, { password: user.password });
     return user;
   }
 
   deleteQuote(quoteId) {
     this.quotes = this.quotes.filter(q => q.id !== quoteId);
     this.saveQuotes();
+    this.deleteQuoteOnServer(quoteId);
   }
 
   promoteToAdmin(userId) {
@@ -1397,6 +1702,7 @@ class Store {
     if (!newPassword || newPassword.length < 4) throw new Error('A nova senha deve ter pelo menos 4 caracteres.');
     user.password = newPassword.trim();
     this.saveUsers();
+    this.updateUserOnServer(userId, { password: user.password });
     return user;
   }
 
@@ -1425,6 +1731,7 @@ class Store {
 
     this.users = this.users.filter(u => u.id !== userId);
     this.saveUsers();
+    this.deleteUserOnServer(userId);
 
     if (this.currentUser && this.currentUser.id === userId) {
       this.logout();
@@ -1450,6 +1757,7 @@ class Store {
 
     this.messages.push(msg);
     this.saveMessages();
+    this.pushMessageToServer(msg);
     return msg;
   }
 

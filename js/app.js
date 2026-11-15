@@ -105,8 +105,19 @@ class App {
 
       // Auto-atualização do painel admin frequente (a cada 5 segundos)
       // (sincroniza cotações e usuários instantaneamente quando outras abas ou clientes enviam dados)
+      let serverSyncTick = 0;
       setInterval(() => {
         if (this.currentView === 'admin_dashboard' && window.logixStore.currentUser?.role === 'admin') {
+          serverSyncTick++;
+          // Sincroniza com servidor central a cada 10 segundos
+          if (serverSyncTick % 2 === 0 && window.logixStore.serverConfig && window.logixStore.serverConfig.isEnabled()) {
+            window.logixStore.syncWithServer().then(synced => {
+              if (synced) {
+                this.renderAdminDashboard();
+              }
+            }).catch(() => {});
+          }
+
           const savedQuotes = localStorage.getItem('logixbrasil_quotes');
           const savedUsers = localStorage.getItem('logixbrasil_users');
           const savedNotifs = localStorage.getItem('logixbrasil_notifications');
@@ -220,7 +231,8 @@ class App {
       'modal-quote-details',
       'modal-forgot-password',
       'modal-edit-password',
-      'modal-admin-phone'
+      'modal-admin-phone',
+      'modal-server-config'
     ];
     modalIds.forEach(id => {
       document.getElementById(id)?.classList.add('hidden');
@@ -885,6 +897,21 @@ class App {
         cleanupInfoEl.innerHTML = `Última execução: <strong>${timeStr}</strong> (${cleanupInfo.stats?.totalRemoved || 0} itens liberados). Agendado a cada 5 min.`;
       } else {
         cleanupInfoEl.textContent = 'Rotina ativa em segundo plano com eliminação por TTL (a cada 5 min).';
+      }
+    }
+
+    // Atualização do indicador de status da conexão com o Servidor Próprio
+    const serverDot = document.getElementById('admin-server-status-dot');
+    if (serverDot) {
+      if (window.logixStore.serverOnline) {
+        serverDot.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
+        serverDot.title = 'Servidor Próprio Conectado';
+      } else if (!window.logixStore.serverConfig.isEnabled()) {
+        serverDot.className = 'w-2 h-2 rounded-full bg-slate-400';
+        serverDot.title = 'Sincronização com Servidor Desativada';
+      } else {
+        serverDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        serverDot.title = 'Servidor Offline ou Inacessível';
       }
     }
   }
@@ -2039,7 +2066,14 @@ class App {
   }
 
   // --- ATUALIZAÇÃO MANUAL DOS DADOS DO PAINEL ADMIN ---
-  refreshAdminData(silent = false) {
+  async refreshAdminData(silent = false) {
+    // Sincroniza do servidor central se estiver configurado
+    if (window.logixStore.serverConfig && window.logixStore.serverConfig.isEnabled()) {
+      try {
+        await window.logixStore.syncWithServer();
+      } catch (e) { /* fallback local */ }
+    }
+
     // Recarrega cotações, usuários e notificações do localStorage
     // (útil quando clientes enviaram cotações em outra aba ou dispositivo)
     const savedQuotes = localStorage.getItem('logixbrasil_quotes');
@@ -2050,6 +2084,7 @@ class App {
     if (savedUsers) {
       try { window.logixStore.users = JSON.parse(savedUsers); } catch (e) { /* ignorar */ }
     }
+    window.logixStore.syncUsersFromQuotes();
     const savedNotifs = localStorage.getItem('logixbrasil_notifications');
     if (savedNotifs) {
       try { window.logixStore.notifications = JSON.parse(savedNotifs); } catch (e) { /* ignorar */ }
@@ -2063,7 +2098,10 @@ class App {
       try { window.logixStore.phoneAlerts = JSON.parse(savedPhoneAlerts); } catch (e) { /* ignorar */ }
     }
     this.renderAdminDashboard();
-    if (!silent) this.showToast('Dados atualizados com sucesso!', 'success');
+    if (!silent) {
+      const serverMsg = window.logixStore.serverOnline ? ' (sincronizado com o servidor central)' : '';
+      this.showToast(`Dados atualizados com sucesso!${serverMsg}`, 'success');
+    }
   }
 
   renderUsersManagement() {
@@ -3403,6 +3441,152 @@ class App {
       this.renderAdminDashboard();
     } catch (err) {
       this.showToast('Erro ao executar limpeza: ' + err.message, 'error');
+    }
+  }
+
+  // --- GERENCIAMENTO DO SERVIDOR PRÓPRIO DE DADOS ---
+  openServerConfigModal() {
+    const modal = document.getElementById('modal-server-config');
+    if (!modal) return;
+    const urlInput = document.getElementById('server-config-url-input');
+    if (urlInput) {
+      urlInput.value = window.logixStore.serverConfig.getUrl();
+    }
+    modal.classList.remove('hidden');
+    this.createIcons();
+    this.testServerConnection(false);
+  }
+
+  closeServerConfigModal() {
+    document.getElementById('modal-server-config')?.classList.add('hidden');
+  }
+
+  async handleSaveServerConfig(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const urlInput = document.getElementById('server-config-url-input');
+    const newUrl = urlInput ? urlInput.value.trim() : '';
+
+    if (!newUrl) {
+      this.showToast('Por favor, informe a URL do servidor.', 'warning');
+      return;
+    }
+
+    window.logixStore.serverConfig.setUrl(newUrl);
+    window.logixStore.serverConfig.setEnabled(true);
+    this.showToast('Configuração de URL salva! Testando conexão...', 'info');
+
+    const result = await this.testServerConnection(true);
+    if (result && result.ok) {
+      await window.logixStore.syncWithServer();
+      this.renderAdminDashboard();
+      this.showToast('✅ Servidor conectado e sincronizado com sucesso!', 'success');
+    }
+  }
+
+  async testServerConnection(showAlert = true) {
+    const badge = document.getElementById('server-modal-status-badge');
+    const statsInfo = document.getElementById('server-modal-stats-info');
+    const testBtn = document.getElementById('btn-test-server-connection');
+    const urlInput = document.getElementById('server-config-url-input');
+    const targetUrl = urlInput ? urlInput.value.trim() : window.logixStore.serverConfig.getUrl();
+
+    if (badge) {
+      badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300';
+      badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Verificando conexão...';
+    }
+    if (testBtn) {
+      testBtn.disabled = true;
+      testBtn.classList.add('opacity-70');
+    }
+
+    try {
+      const res = await window.logixStore.checkServerHealth(targetUrl);
+      if (res && res.ok && res.data) {
+        if (badge) {
+          badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-900 border border-emerald-300';
+          badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span> 🟢 Servidor Online & Conectado';
+        }
+        if (statsInfo) {
+          statsInfo.classList.remove('hidden');
+          const serverNameEl = document.getElementById('server-modal-name');
+          const usersCountEl = document.getElementById('server-modal-users-count');
+          const quotesCountEl = document.getElementById('server-modal-quotes-count');
+          const lastSyncEl = document.getElementById('server-modal-last-sync');
+
+          if (serverNameEl) serverNameEl.textContent = res.data.server || 'Top10 Cargas API';
+          if (usersCountEl) usersCountEl.textContent = res.data.stats?.users_count ?? 0;
+          if (quotesCountEl) quotesCountEl.textContent = res.data.stats?.quotes_count ?? 0;
+          if (lastSyncEl) {
+            const now = new Date();
+            lastSyncEl.textContent = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR')}`;
+          }
+        }
+        const serverDot = document.getElementById('admin-server-status-dot');
+        if (serverDot) {
+          serverDot.className = 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse';
+          serverDot.title = 'Servidor Próprio Conectado';
+        }
+        if (showAlert) {
+          this.showToast('✅ Conexão com o servidor estabelecida com sucesso!', 'success');
+        }
+        return { ok: true, data: res.data };
+      } else {
+        throw new Error(res.error || 'Servidor não respondeu com status 200.');
+      }
+    } catch (err) {
+      if (badge) {
+        badge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-900 border border-rose-300';
+        badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span> 🔴 Servidor Inacessível';
+      }
+      if (statsInfo) {
+        statsInfo.classList.remove('hidden');
+        statsInfo.innerHTML = `
+          <p class="text-rose-600 font-semibold">⚠️ ${this.escapeHtml(err.message || 'Falha ao conectar com o servidor.')}</p>
+          <p class="text-[11px] text-stone-500">O sistema continua funcionando em modo offline local (LocalStorage). Seus dados não foram perdidos.</p>
+        `;
+      }
+      const serverDot = document.getElementById('admin-server-status-dot');
+      if (serverDot) {
+        serverDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        serverDot.title = 'Servidor Inacessível';
+      }
+      if (showAlert) {
+        this.showToast('Não foi possível conectar ao servidor: ' + (err.message || 'Verifique a URL.'), 'error');
+      }
+      return { ok: false, error: err.message };
+    } finally {
+      if (testBtn) {
+        testBtn.disabled = false;
+        testBtn.classList.remove('opacity-70');
+      }
+      this.createIcons();
+    }
+  }
+
+  async syncServerNow() {
+    const syncBtn = document.getElementById('btn-sync-server-now');
+    if (syncBtn) {
+      syncBtn.disabled = true;
+      syncBtn.classList.add('opacity-70');
+    }
+
+    try {
+      this.showToast('Iniciando sincronização com o servidor central...', 'info');
+      const ok = await window.logixStore.syncWithServer();
+      if (ok) {
+        await this.testServerConnection(false);
+        this.renderAdminDashboard();
+        this.showToast('✅ Sincronização concluída com sucesso!', 'success');
+      } else {
+        this.showToast('Não foi possível sincronizar. O servidor está offline ou inacessível.', 'warning');
+      }
+    } catch (err) {
+      this.showToast('Erro durante a sincronização: ' + err.message, 'error');
+    } finally {
+      if (syncBtn) {
+        syncBtn.disabled = false;
+        syncBtn.classList.remove('opacity-70');
+      }
     }
   }
 }

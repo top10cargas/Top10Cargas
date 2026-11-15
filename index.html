@@ -581,14 +581,18 @@
       </div>
 
       <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+        <button onclick="app.openServerConfigModal()" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-wine-900 hover:bg-wine-800 text-yellowbrand-300 text-xs font-bold rounded-xl border border-yellowbrand-500/40 flex items-center gap-1.5 transition" title="Configurar conexão com o servidor próprio">
+          <i data-lucide="server" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellowbrand-400"></i> Servidor
+          <span id="admin-server-status-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Status da conexão com o servidor"></span>
+        </button>
         <button onclick="app.refreshAdminData()" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-wine-800 hover:bg-wine-700 text-yellowbrand-300 text-xs font-bold rounded-xl border border-yellowbrand-500/30 flex items-center gap-1.5 transition" title="Recarregar cotações e usuários do servidor">
           <i data-lucide="refresh-cw" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> Atualizar
         </button>
         <button onclick="app.exportHistoryCSV()" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-wine-900 hover:bg-wine-800 text-stone-200 text-xs font-bold rounded-xl border border-wine-700 flex items-center gap-1.5 transition" title="Exportar dados para CSV">
-          <i data-lucide="download" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellowbrand-400"></i> Relatório CSV
+          <i data-lucide="download" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellowbrand-400"></i> CSV
         </button>
         <button onclick="app.actionRunTemporaryDataCleanup()" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-stone-900 hover:bg-stone-800 text-yellowbrand-300 text-xs font-bold rounded-xl border border-yellowbrand-400/40 flex items-center gap-1.5 transition" title="Executar limpeza programada de dados temporários e cache expirado">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellowbrand-400"></i> Limpar Cache
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellowbrand-400"></i> Limpar
         </button>
       </div>
     </div>
@@ -1925,6 +1929,87 @@
           </button>
           <button type="submit" class="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow transition flex items-center justify-center gap-2">
             <i data-lucide="check" class="w-4 h-4"></i> Salvar Telefone
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: CONFIGURAÇÃO DO SERVIDOR PRÓPRIO (CROSS-DEVICE)   -->
+  <!-- ======================================================== -->
+  <div id="modal-server-config" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-wine-100 animate-fade-in max-h-[92vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between pb-4 border-b border-stone-200">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 bg-wine-50 text-wine-900 rounded-xl">
+            <i data-lucide="server" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-lg text-wine-950">Servidor Próprio de Dados</h3>
+            <p class="text-xs text-stone-500">Sincronização centralizada para acessar de qualquer dispositivo</p>
+          </div>
+        </div>
+        <button onclick="app.closeServerConfigModal()" class="p-2 text-stone-400 hover:text-stone-700 rounded-lg hover:bg-stone-100 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Status Atual da Conexão -->
+      <div class="mt-4 p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-stone-700">Estado da Conexão:</span>
+          <span id="server-modal-status-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">
+            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Verificando...
+          </span>
+        </div>
+        <div id="server-modal-stats-info" class="text-xs text-stone-600 space-y-1 hidden">
+          <p>📡 Servidor ativo: <strong id="server-modal-name" class="text-slate-800">Top10 Cargas API</strong></p>
+          <p>👥 Usuários no servidor: <strong id="server-modal-users-count" class="text-wine-950">0</strong></p>
+          <p>📦 Cotações no servidor: <strong id="server-modal-quotes-count" class="text-wine-950">0</strong></p>
+          <p class="text-[10px] text-stone-400">Última sincronização: <span id="server-modal-last-sync">Agora</span></p>
+        </div>
+      </div>
+
+      <!-- Formulário de URL da API -->
+      <form onsubmit="app.handleSaveServerConfig(event)" class="mt-4 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-800 mb-1.5">
+            URL Base da API do Servidor:
+          </label>
+          <input type="url" id="server-config-url-input" placeholder="https://top10cargas.com/api" required
+            class="w-full px-4 py-2.5 text-xs sm:text-sm font-mono border border-stone-300 rounded-xl focus:outline-none focus:border-wine-800 transition">
+          <p class="text-[11px] text-stone-400 mt-1 leading-snug">
+            Exemplos: <code>https://top10cargas.com/api</code> (Hospedagem Web com PHP) ou <code>http://localhost:3000/api</code> (Servidor Node.js local).
+          </p>
+        </div>
+
+        <div class="p-3 bg-wine-50/60 rounded-xl border border-wine-100 text-xs text-stone-700 space-y-1.5">
+          <p class="font-bold text-wine-950 flex items-center gap-1.5">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+            Como funciona o Servidor Próprio:
+          </p>
+          <p class="text-[11px] leading-relaxed">
+            1. Qualquer usuário ou cliente que se cadastrar ou solicitar frete (pelo celular ou computador) terá seus dados enviados diretamente ao <strong>seu servidor central</strong>.
+          </p>
+          <p class="text-[11px] leading-relaxed">
+            2. Você, como administrador, poderá fazer login a partir do seu telefone, tablet ou computador e <strong>verá todos os novos usuários e suas cotações em tempo real</strong>.
+          </p>
+          <p class="text-[11px] leading-relaxed">
+            3. Caso o servidor fique temporariamente offline, o aplicativo continua operando normalmente salvando localmente e sincroniza quando reestabelecido.
+          </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2 pt-2">
+          <button type="button" onclick="app.testServerConnection()" id="btn-test-server-connection" class="flex-1 px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl border border-stone-300 flex items-center justify-center gap-1.5 transition">
+            <i data-lucide="radio" class="w-4 h-4 text-emerald-600"></i> Testar Conexão
+          </button>
+          <button type="button" onclick="app.syncServerNow()" id="btn-sync-server-now" class="flex-1 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Sincronizar Agora
+          </button>
+          <button type="submit" class="flex-1 px-4 py-2.5 bg-wine-900 hover:bg-wine-950 text-yellowbrand-300 font-bold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5 border border-wine-950">
+            <i data-lucide="save" class="w-4 h-4"></i> Salvar URL
           </button>
         </div>
       </form>

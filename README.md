@@ -57,9 +57,39 @@ Use a **Barra Superior de Demonstração** para navegar instantaneamente entre o
 
 | Perfil | E-mail | Senha | Descrição |
 |---|---|---|---|
+| **Administrador Oficial** | `top10cargas@hotmail.com` | `Caxias844$` | Acesso irrestrito a todos os usuários, cotações, propostas e configuração do servidor central. |
 | **Cliente Teste** | `lucas@empresa.com.br` | `demo` | Teste de solicitações de frete, resposta às propostas e histórico. |
-| **Administrador** | `admin@logixbrasil.com.br` | `admin` | Análise de cargas, envio de propostas em R$ e controle de entregas. |
-| **Visitante** | — | — | Visualização pública da Landing Page. |
+| **Visitante** | — | — | Visualização pública da Landing Page e simulação rápida. |
+
+---
+
+## 🚀 Sincronização Centralizada com Servidor Próprio (Multi-Dispositivo)
+
+Para que qualquer usuário que se cadastre ou envie cotação pelo **celular ou computador** seja visto imediatamente pelo administrador a partir de **qualquer outro dispositivo**, você pode utilizar o backend centralizado:
+
+### Opção 1: Backend PHP (Hospedagem Web / cPanel / Apache / Nginx)
+1. Faça upload da pasta `api/` para a raiz do seu domínio (ex: `top10cargas.com/api`).
+2. O sistema armazena com segurança os dados em `api/data/*.json` com bloqueio de concorrência e proteção `.htaccess`.
+3. No painel do Administrador, clique no botão **"Servidor"** no topo e confirme a URL (ex: `https://top10cargas.com/api`).
+4. Clique em **"Testar Conexão"** e em seguida **"Salvar URL"**.
+
+### Opção 2: Backend Node.js / Express (VPS / Render / Railway / Docker)
+1. Acesse a pasta `server/`:
+   ```bash
+   cd server
+   npm install
+   npm start
+   ```
+2. O servidor iniciará na porta `3000` (ou na variável de ambiente `PORT`).
+3. No painel admin, configure a URL correspondente (ex: `https://api.top10cargas.com/api` ou `http://localhost:3000/api`).
+
+---
+
+## 📱 Responsividade Mobile e Recursos Avançados
+- **Interface 100% Fluida**: Totalmente adaptada para smartphones, tablets e desktops de qualquer resolução.
+- **Scroll Horizontal Táctil**: Abas administrativas e do cliente com deslizamento suave no mobile (`overflow-x-auto`).
+- **Vinculação Automática**: Usuários e cotações criados por convidados são automaticamente integrados ao banco de dados e associados ao perfil do cliente.
+- **Resiliência Offline**: Se a conexão com o servidor falhar momentaneamente, o sistema opera em modo offline via `localStorage` e sincroniza assim que a conexão for reestabelecida.
 
 ---
 
