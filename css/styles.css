@@ -121,3 +121,225 @@ body {
     width: 100%;
   }
 }
+
+/* ========================================================
+   RESPONSIVIDADE MOBILE — CORREÇÕES GERAIS
+   ======================================================== */
+
+/* Garante que nada transborde horizontalmente */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Notificações: ajusta largura em telas pequenas */
+#notifications-dropdown {
+  max-width: calc(100vw - 2rem);
+  right: 0;
+}
+
+/* ---- HEADER MOBILE ---- */
+@media (max-width: 639px) {
+  /* Logo: reduz tamanho em mobile */
+  header .w-12.h-12 {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  /* Texto do logo: oculta subtítulo no mobile */
+  header div > span.text-2xl {
+    font-size: 1.1rem;
+  }
+
+  /* Botões de autenticação: ajusta tamanho */
+  #nav-auth-guest button:last-child {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+  }
+  #nav-auth-guest button:first-child {
+    display: none; /* Oculta botão "Entrar" no mobile para economizar espaço */
+  }
+
+  /* Botão "Painel Admin" reduzido no mobile */
+  #nav-auth-admin button:first-child {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.7rem;
+    gap: 0.25rem;
+  }
+
+  /* Botões do cliente no header: reduz no mobile */
+  #nav-auth-client button {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.7rem;
+  }
+  #nav-auth-client .h-6.w-px {
+    display: none;
+  }
+}
+
+/* ---- PAINEL ADMIN: CABEÇALHO ---- */
+@media (max-width: 767px) {
+  /* Header do admin: botões em linha rolável */
+  #view-admin-dashboard > div:first-child > div.flex.items-center.gap-3 {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  #view-admin-dashboard > div:first-child > div.flex.items-center.gap-3 button {
+    font-size: 0.65rem;
+    padding: 0.4rem 0.6rem;
+  }
+}
+
+/* ---- PAINEL ADMIN: ABAS (tab bar) ---- */
+/* Rolagem horizontal nas abas do admin em mobile */
+#view-admin-dashboard .border-b.border-stone-200.mb-6.flex.items-center.gap-4.flex-wrap {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 0;
+  gap: 0;
+}
+#view-admin-dashboard .border-b.border-stone-200.mb-6.flex.items-center.gap-4.flex-wrap::-webkit-scrollbar {
+  display: none;
+}
+#view-admin-dashboard .border-b.border-stone-200.mb-6.flex.items-center.gap-4.flex-wrap button {
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+/* ---- PAINEL CLIENTE: ABAS ---- */
+#view-client-dashboard .border-b.border-stone-200.mb-6.flex.items-center.gap-4 {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+#view-client-dashboard .border-b.border-stone-200.mb-6.flex.items-center.gap-4::-webkit-scrollbar {
+  display: none;
+}
+#view-client-dashboard .border-b.border-stone-200.mb-6.flex.items-center.gap-4 button {
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+}
+
+/* ---- TABELAS: Rolagem horizontal garantida ---- */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ---- MODAIS: Ajuste para mobile ---- */
+.modal-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem;
+}
+@media (min-width: 640px) {
+  .modal-overlay {
+    padding: 1.5rem;
+  }
+}
+
+/* Modal interno: largura máxima com scroll */
+.modal-overlay > div {
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  width: 100%;
+}
+
+/* ---- BANNER DE MANUTENÇÃO (admin): quebra linha no mobile ---- */
+#admin-cleanup-banner {
+  flex-direction: column;
+  align-items: flex-start;
+}
+@media (min-width: 640px) {
+  #admin-cleanup-banner {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+/* ---- HERO SECTION: Ajustes mobile ---- */
+@media (max-width: 639px) {
+  /* Hero: reduz tamanho do título */
+  #view-landing section h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+  /* Card da cotação rápida: reduz padding */
+  .glass-card-wine {
+    padding: 1.25rem;
+  }
+  /* Estatísticas do hero: reduz fonte */
+  #view-landing .grid.grid-cols-3 p.text-2xl {
+    font-size: 1.25rem;
+  }
+}
+
+/* ---- PAINEL ADMIN: Chat mobile ---- */
+@media (max-width: 1023px) {
+  #tab-admin-chat-content .grid.grid-cols-1.lg\\:grid-cols-12 {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  #tab-admin-chat-content .lg\\:col-span-4 {
+    max-height: 250px;
+    border-right: none;
+    border-bottom: 1px solid #e7e5e4;
+  }
+  #tab-admin-chat-content .lg\\:col-span-8 {
+    height: 400px;
+  }
+}
+
+/* ---- PAINEL CLIENTE: Chat mobile ---- */
+@media (max-width: 639px) {
+  #tab-client-chat-content .h-\[580px\] {
+    height: 480px;
+  }
+}
+
+/* ---- COTAÇÕES ATIVAS DO CLIENTE: grid responsivo ---- */
+@media (max-width: 639px) {
+  #client-active-quotes-list .grid.sm\\:grid-cols-2.lg\\:grid-cols-4 {
+    grid-template-columns: 1fr;
+  }
+  #client-active-quotes-list .p-5.grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- PAINEL DO ADMIN: KPIs ---- */
+@media (max-width: 479px) {
+  #view-admin-dashboard .grid.grid-cols-2.lg\\:grid-cols-4 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---- SEÇÃO DE CONTATO: botões em coluna no mobile ---- */
+@media (max-width: 639px) {
+  #contato .flex.flex-col.sm\\:flex-row.gap-3\\.5 {
+    flex-direction: column;
+  }
+  #contato .flex.flex-col.sm\\:flex-row.gap-3\\.5 a,
+  #contato .flex.flex-col.sm\\:flex-row.gap-3\\.5 button {
+    width: 100%;
+  }
+}
+
+/* ---- GARANTIA DE VISUALIZAÇÃO CORRETA EM TODOS OS BREAKPOINTS ---- */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Formulários e inputs não transbordam */
+input, select, textarea {
+  max-width: 100%;
+  box-sizing: border-box;
+}

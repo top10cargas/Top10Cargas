@@ -64,14 +64,20 @@ class App {
       runSetup();
     }
 
-      // Escuta em tempo real quando qualquer aba ou cliente submeter uma nova cotação
+      // Escuta em tempo real quando qualquer aba ou cliente submeter uma nova cotação ou cadastrar usuário
       window.addEventListener('storage', (event) => {
         if (event.key === 'logixbrasil_quotes' && event.newValue) {
           try {
             const parsed = JSON.parse(event.newValue);
-            if (Array.isArray(parsed) && parsed.length > window.logixStore.quotes.length) {
-              const newest = parsed[0];
-              if (window.logixStore.currentUser?.role === 'admin') {
+            if (Array.isArray(parsed)) {
+              const hadFewer = parsed.length > window.logixStore.quotes.length;
+              window.logixStore.quotes = parsed;
+              window.logixStore.syncUsersFromQuotes();
+              if (this.currentView === 'admin_dashboard') {
+                this.renderAdminDashboard();
+              }
+              if (hadFewer && window.logixStore.currentUser?.role === 'admin') {
+                const newest = parsed[0];
                 this.playNotificationChime();
                 this.triggerDesktopNotification(
                   `📦 Nova Cotação Recebida (${newest?.id || ''})`,
@@ -81,11 +87,24 @@ class App {
               }
             }
           } catch (e) { /* ignorar */ }
+        } else if (event.key === 'logixbrasil_users' && event.newValue) {
+          try {
+            const parsed = JSON.parse(event.newValue);
+            if (Array.isArray(parsed)) {
+              window.logixStore.users = parsed;
+              if (this.currentView === 'admin_dashboard') {
+                this.renderAdminDashboard();
+                if (this.currentAdminTab === 'users') {
+                  this.renderUsersManagement();
+                }
+              }
+            }
+          } catch (e) { /* ignorar */ }
         }
       });
 
-      // Auto-atualização do painel admin a cada 30 segundos
-      // (sincroniza cotações e usuários quando outras abas ou clientes enviam dados)
+      // Auto-atualização do painel admin frequente (a cada 5 segundos)
+      // (sincroniza cotações e usuários instantaneamente quando outras abas ou clientes enviam dados)
       setInterval(() => {
         if (this.currentView === 'admin_dashboard' && window.logixStore.currentUser?.role === 'admin') {
           const savedQuotes = localStorage.getItem('logixbrasil_quotes');
@@ -100,6 +119,7 @@ class App {
               if (JSON.stringify(parsed) !== JSON.stringify(window.logixStore.quotes)) {
                 const hadFewer = parsed.length > window.logixStore.quotes.length;
                 window.logixStore.quotes = parsed;
+                window.logixStore.syncUsersFromQuotes();
                 changed = true;
                 if (hadFewer) {
                   this.playNotificationChime();
@@ -143,7 +163,7 @@ class App {
             this.renderAdminDashboard();
           }
         }
-      }, 30000);
+      }, 5000);
 
     // Inicia a visualização respeitando a sessão ativa do usuário (sem forçar logout)
     this.navigateTo('landing');
@@ -274,6 +294,9 @@ class App {
       }
       document.getElementById('view-admin-dashboard').classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Força sincronização de dados ao entrar no painel admin
+      this.refreshAdminData(true);
+      return;
     }
 
     this.render();
@@ -744,6 +767,10 @@ class App {
     document.getElementById('admin-pending-badge').textContent = pendingQuotes.length;
     document.getElementById('admin-active-badge').textContent = acceptedQuotes.length;
     document.getElementById('admin-history-badge').textContent = allQuotes.length;
+
+    const allUsers = window.logixStore.getAllUsers();
+    const adminUsersBadge = document.getElementById('admin-users-badge');
+    if (adminUsersBadge) adminUsersBadge.textContent = allUsers.length;
 
     const phoneAlerts = window.logixStore.getPhoneAlertsLog();
     const adminPhonesBadge = document.getElementById('admin-phones-badge');
@@ -1742,8 +1769,8 @@ class App {
     const contentHistory = document.getElementById('tab-client-history-content');
     const contentChat = document.getElementById('tab-client-chat-content');
 
-    const activeClasses = 'pb-3 text-sm font-bold border-b-2 border-wine-800 text-wine-900 flex items-center gap-2';
-    const inactiveClasses = 'pb-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2';
+    const activeClasses = 'pb-3 px-2 sm:px-0 text-xs sm:text-sm font-bold border-b-2 border-wine-800 text-wine-900 flex items-center gap-1.5 flex-shrink-0 whitespace-nowrap';
+    const inactiveClasses = 'pb-3 px-2 sm:px-0 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-1.5 flex-shrink-0 whitespace-nowrap';
 
     if (btnProposals) btnProposals.className = tab === 'proposals' ? activeClasses : inactiveClasses;
     if (btnHistory) btnHistory.className = tab === 'history' ? activeClasses : inactiveClasses;
@@ -1777,8 +1804,8 @@ class App {
     const contentChat = document.getElementById('tab-admin-chat-content');
     const contentPhones = document.getElementById('tab-admin-phones-content');
 
-    const activeClasses = 'pb-3 text-sm font-bold border-b-2 border-wine-800 text-wine-900 flex items-center gap-2';
-    const inactiveClasses = 'pb-3 text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2';
+    const activeClasses = 'pb-3 px-2 sm:px-0 text-xs sm:text-sm font-bold border-b-2 border-wine-800 text-wine-900 flex items-center gap-1.5 flex-shrink-0 whitespace-nowrap';
+    const inactiveClasses = 'pb-3 px-2 sm:px-0 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-1.5 flex-shrink-0 whitespace-nowrap';
 
     if (btnPending) btnPending.className = tab === 'pending' ? activeClasses : inactiveClasses;
     if (btnActive) btnActive.className = tab === 'active' ? activeClasses : inactiveClasses;
@@ -1796,7 +1823,22 @@ class App {
     if (contentChat) contentChat.classList.toggle('hidden', tab !== 'chat');
     if (contentPhones) contentPhones.classList.toggle('hidden', tab !== 'phones');
 
-    if (tab === 'users') this.renderUsersManagement();
+    if (tab === 'users') {
+      // Re-sincroniza usuários do localStorage antes de renderizar
+      const savedUsers = localStorage.getItem('logixbrasil_users');
+      if (savedUsers) {
+        try { window.logixStore.users = JSON.parse(savedUsers); } catch (e) { /* ignorar */ }
+      }
+      this.renderUsersManagement();
+    }
+    if (tab === 'pending' || tab === 'active' || tab === 'history') {
+      // Re-sincroniza cotações do localStorage ao trocar de aba
+      const savedQuotes = localStorage.getItem('logixbrasil_quotes');
+      if (savedQuotes) {
+        try { window.logixStore.quotes = JSON.parse(savedQuotes); } catch (e) { /* ignorar */ }
+      }
+      this.renderAdminDashboard();
+    }
     if (tab === 'financial') this.renderFinancialReport();
     if (tab === 'chat') this.renderAdminChat();
     if (tab === 'phones') this.renderAdminPhones();
@@ -1997,7 +2039,7 @@ class App {
   }
 
   // --- ATUALIZAÇÃO MANUAL DOS DADOS DO PAINEL ADMIN ---
-  refreshAdminData() {
+  refreshAdminData(silent = false) {
     // Recarrega cotações, usuários e notificações do localStorage
     // (útil quando clientes enviaram cotações em outra aba ou dispositivo)
     const savedQuotes = localStorage.getItem('logixbrasil_quotes');
@@ -2016,58 +2058,169 @@ class App {
     if (savedMsgs) {
       try { window.logixStore.messages = JSON.parse(savedMsgs); } catch (e) { /* ignorar */ }
     }
+    const savedPhoneAlerts = localStorage.getItem('top10cargas_phone_alerts');
+    if (savedPhoneAlerts) {
+      try { window.logixStore.phoneAlerts = JSON.parse(savedPhoneAlerts); } catch (e) { /* ignorar */ }
+    }
     this.renderAdminDashboard();
-    this.showToast('Dados atualizados com sucesso!', 'success');
+    if (!silent) this.showToast('Dados atualizados com sucesso!', 'success');
   }
 
   renderUsersManagement() {
-    const users = window.logixStore.getAllUsers();
+    let users = window.logixStore.getAllUsers();
     const container = document.getElementById('admin-users-list');
     if (!container) return;
+
+    // Filtro por busca
+    const searchVal = (document.getElementById('admin-users-search')?.value || '').toLowerCase().trim();
+    if (searchVal) {
+      users = users.filter(u => {
+        const nameMatch = (u.name || '').toLowerCase().includes(searchVal);
+        const emailMatch = (u.email || '').toLowerCase().includes(searchVal);
+        const phoneMatch = (u.phone || '').toLowerCase().includes(searchVal);
+        const companyMatch = (u.company || '').toLowerCase().includes(searchVal);
+        const quotes = window.logixStore.getQuotesForUser(u);
+        const quoteMatch = quotes.some(q => (q.id || '').toLowerCase().includes(searchVal) || (q.destination || '').toLowerCase().includes(searchVal));
+        return nameMatch || emailMatch || phoneMatch || companyMatch || quoteMatch;
+      });
+    }
+
     if (users.length === 0) {
-      container.innerHTML = `<div class="p-8 text-center text-stone-400 text-xs">Nenhum usuário cadastrado ainda.</div>`;
+      container.innerHTML = `
+        <div class="p-8 text-center text-stone-400 text-xs">
+          <i data-lucide="user-x" class="w-8 h-8 mx-auto mb-2 opacity-40"></i>
+          <p class="font-bold text-stone-600">${searchVal ? 'Nenhum usuário corresponde aos critérios de busca.' : 'Nenhum usuário cadastrado ainda.'}</p>
+          <p class="text-[11px] text-stone-400 mt-1">Quando novos clientes criarem contas ou solicitarem cotações, eles aparecerão aqui com todas as suas cotações.</p>
+        </div>
+      `;
+      this.createIcons();
       return;
     }
-    container.innerHTML = users.map(u => `
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-stone-50 rounded-xl border border-stone-200">
-        <div class="flex items-center gap-3">
-          ${u.avatar ? `
-            <img src="${u.avatar}" alt="${this.escapeHtml(u.name)}" class="w-10 h-10 rounded-xl object-cover border border-stone-300 shadow-xs flex-shrink-0">
-          ` : `
-            <div class="w-10 h-10 rounded-xl ${u.role === 'admin' ? 'bg-yellowbrand-400 text-wine-950' : 'bg-wine-100 text-wine-900'} flex items-center justify-center font-bold text-sm flex-shrink-0">
-              ${u.name.charAt(0).toUpperCase()}
+
+    container.innerHTML = users.map(u => {
+      const userQuotes = window.logixStore.getQuotesForUser(u);
+      const pendingCount = userQuotes.filter(q => q.status === 'PENDIENTE_ANALISIS' || q.status === 'REANALISIS_SOLICITADO').length;
+      const acceptedCount = userQuotes.filter(q => q.status === 'ACEPTADA' || q.status === 'COMPLETADO').length;
+
+      return `
+        <div class="p-4 bg-stone-50 rounded-xl border border-stone-200 transition hover:border-wine-200">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              ${u.avatar ? `
+                <img src="${u.avatar}" alt="${this.escapeHtml(u.name)}" class="w-11 h-11 rounded-xl object-cover border border-stone-300 shadow-xs flex-shrink-0">
+              ` : `
+                <div class="w-11 h-11 rounded-xl ${u.role === 'admin' ? 'bg-yellowbrand-400 text-wine-950' : 'bg-wine-100 text-wine-900'} flex items-center justify-center font-bold text-base flex-shrink-0">
+                  ${u.name.charAt(0).toUpperCase()}
+                </div>
+              `}
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <p class="font-bold text-slate-900 text-sm">${this.escapeHtml(u.name)}</p>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${u.role === 'admin' ? 'bg-yellowbrand-200 text-wine-950' : 'bg-slate-200 text-slate-700'}">${u.role === 'admin' ? 'Administrador' : 'Cliente'}</span>
+                  ${userQuotes.length > 0 ? `
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${pendingCount > 0 ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-emerald-100 text-emerald-800'}">
+                      📦 ${userQuotes.length} Cotação(ões)${pendingCount > 0 ? ` • ${pendingCount} pendente(s)` : ''}
+                    </span>
+                  ` : `
+                    <span class="text-[10px] text-stone-400 px-2 py-0.5 rounded-full bg-stone-100">Sem cotações</span>
+                  `}
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">
+                  <strong>${this.escapeHtml(u.email)}</strong>
+                  ${u.phone ? ` • Tel: <span class="text-stone-700 font-semibold">${this.escapeHtml(u.phone)}</span>` : ''}
+                  ${u.company ? ` • ${this.escapeHtml(u.company)}` : ''}
+                </p>
+                <div class="flex items-center gap-2 mt-1 text-[11px] text-slate-500 flex-wrap">
+                  <span class="text-slate-400 text-[10px]">Senha: <code class="bg-white px-1.5 py-0.5 rounded border border-slate-200 text-slate-700 font-mono text-[10px]">${this.escapeHtml(u.password)}</code></span>
+                  ${u.cpfCnpj ? `<span class="text-[10px] text-slate-400">CPF/CNPJ: ${this.escapeHtml(u.cpfCnpj)}</span>` : ''}
+                  ${u.createdAt ? `<span class="text-[10px] text-stone-400">• Cadastro: ${this.formatDate(u.createdAt)}</span>` : ''}
+                </div>
+              </div>
             </div>
-          `}
-          <div>
-            <p class="font-bold text-slate-900 text-sm">${this.escapeHtml(u.name)}</p>
-            <p class="text-xs text-slate-500">${this.escapeHtml(u.email)} ${u.company ? '• ' + this.escapeHtml(u.company) : ''}</p>
-            <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${u.role === 'admin' ? 'bg-yellowbrand-200 text-wine-950' : 'bg-slate-200 text-slate-700'}">${u.role === 'admin' ? 'Administrador' : 'Cliente'}</span>
-              <span class="text-[10px] text-slate-400">Senha: <code class="bg-white px-1 py-0.5 rounded border border-slate-200 text-slate-700 font-mono">${this.escapeHtml(u.password)}</code></span>
-              ${u.cpfCnpj ? `<span class="text-[10px] text-slate-400">CPF/CNPJ: ${this.escapeHtml(u.cpfCnpj)}</span>` : ''}
+
+            <!-- Botões de Ação do Usuário -->
+            <div class="flex items-center gap-2 flex-shrink-0 flex-wrap">
+              <button onclick="app.toggleUserQuotes('${u.id}')" class="px-3 py-1.5 ${userQuotes.length > 0 ? 'bg-wine-900 hover:bg-wine-950 text-white shadow-xs' : 'bg-stone-200 text-stone-600'} text-xs font-bold rounded-lg flex items-center gap-1.5 transition">
+                <i data-lucide="package" class="w-3.5 h-3.5 text-yellowbrand-400"></i>
+                <span>Ver Cotações (${userQuotes.length})</span>
+                <i data-lucide="chevron-down" id="chevron-quotes-${u.id}" class="w-3.5 h-3.5 transition-transform duration-200"></i>
+              </button>
+
+              ${u.role !== 'admin' ? `
+                <button onclick="app.actionPromoteUser('${u.id}')" class="px-2.5 py-1.5 bg-yellowbrand-400 hover:bg-yellowbrand-300 text-wine-950 text-xs font-bold rounded-lg flex items-center gap-1 transition" title="Tornar este usuário um administrador">
+                  <i data-lucide="shield-plus" class="w-3.5 h-3.5"></i> Admin
+                </button>
+              ` : `
+                <button onclick="app.actionDemoteUser('${u.id}')" class="px-2.5 py-1.5 bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-bold rounded-lg flex items-center gap-1 transition" title="Remover permissões de administrador">
+                  <i data-lucide="shield-minus" class="w-3.5 h-3.5"></i> Cliente
+                </button>
+              `}
+              <button onclick="app.openEditPasswordModal('${u.id}', '${this.escapeHtml(u.name)}')" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold rounded-lg flex items-center gap-1 transition" title="Editar senha desta conta">
+                <i data-lucide="key" class="w-3.5 h-3.5"></i> Senha
+              </button>
+              <button onclick="app.actionDeleteUser('${u.id}')" class="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg transition" title="Excluir Conta Permanentemente">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
             </div>
           </div>
+
+          <!-- Seção de Cotações Vinculadas a Este Usuário -->
+          <div id="user-quotes-${u.id}" class="hidden mt-3 pt-3 border-t border-stone-200 animate-fade-in">
+            <h5 class="text-xs font-bold text-wine-950 mb-2 flex items-center gap-1.5">
+              <i data-lucide="list" class="w-3.5 h-3.5 text-wine-800"></i>
+              Cotações de ${this.escapeHtml(u.name)} (${userQuotes.length})
+            </h5>
+            ${userQuotes.length === 0 ? `
+              <p class="text-xs text-stone-400 italic py-2">Nenhuma cotação solicitada por este usuário até o momento.</p>
+            ` : `
+              <div class="space-y-2">
+                ${userQuotes.map(q => `
+                  <div class="p-3 bg-white rounded-lg border border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs hover:border-wine-300 transition">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="font-mono font-bold text-slate-900">${q.id}</span>
+                      ${this.buildModalityBadge(q.modality)}
+                      ${this.buildStatusBadge(q.status, q.deliveryStage)}
+                      <span class="text-stone-400 text-[11px]">• ${this.formatDate(q.createdAt)}</span>
+                    </div>
+
+                    <div class="text-[11px] text-stone-600">
+                      <span><strong>${this.escapeHtml(q.origin)}</strong> ➔ <strong>${this.escapeHtml(q.destination)}</strong></span>
+                      <span class="text-stone-400 ml-1">(${q.packageCount} vol • ${q.weight} kg)</span>
+                      ${q.proposal ? `<span class="ml-2 font-bold text-wine-950">${this.formatCurrencyBRL(q.proposal.price)}</span>` : '<span class="ml-2 text-amber-700 font-semibold italic">Aguardando proposta</span>'}
+                    </div>
+
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                      <button onclick="app.viewQuoteDetails('${q.id}')" class="px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs rounded transition flex items-center gap-1">
+                        <i data-lucide="file-text" class="w-3 h-3"></i> Ficha
+                      </button>
+                      ${(q.status === 'PENDIENTE_ANALISIS' || q.status === 'REANALISIS_SOLICITADO') ? `
+                        <button onclick="app.openAdminProposalModal('${q.id}')" class="px-2.5 py-1 bg-wine-900 hover:bg-wine-950 text-white font-bold text-xs rounded shadow-xs transition flex items-center gap-1">
+                          <i data-lucide="calculator" class="w-3 h-3 text-yellowbrand-400"></i> Proposta
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
         </div>
-        <div class="flex items-center gap-2 flex-shrink-0 flex-wrap">
-          ${u.role !== 'admin' ? `
-            <button onclick="app.actionPromoteUser('${u.id}')" class="px-3 py-1.5 bg-yellowbrand-400 hover:bg-yellowbrand-300 text-wine-950 text-xs font-bold rounded-lg flex items-center gap-1 transition">
-              <i data-lucide="shield-plus" class="w-3.5 h-3.5"></i> Tornar Admin
-            </button>
-          ` : `
-            <button onclick="app.actionDemoteUser('${u.id}')" class="px-3 py-1.5 bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-bold rounded-lg flex items-center gap-1 transition">
-              <i data-lucide="shield-minus" class="w-3.5 h-3.5"></i> Remover Admin
-            </button>
-          `}
-          <button onclick="app.openEditPasswordModal('${u.id}')" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold rounded-lg flex items-center gap-1 transition" title="Editar senha desta conta">
-            <i data-lucide="key" class="w-3.5 h-3.5"></i> Editar Senha
-          </button>
-          <button onclick="app.actionDeleteUser('${u.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold rounded-lg flex items-center gap-1 transition" title="Excluir Conta Permanentemente">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Excluir Conta
-          </button>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
+
     this.createIcons();
+  }
+
+  toggleUserQuotes(userId) {
+    const el = document.getElementById(`user-quotes-${userId}`);
+    const chevron = document.getElementById(`chevron-quotes-${userId}`);
+    if (el) {
+      const isHidden = el.classList.contains('hidden');
+      el.classList.toggle('hidden');
+      if (chevron) {
+        chevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+      }
+    }
   }
 
   actionPromoteUser(userId) {

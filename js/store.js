@@ -114,6 +114,7 @@ class Store {
       this.quotes = staticData.getInitialQuotes();
       this.saveQuotes();
     }
+    this.syncUsersFromQuotes();
 
     // 3. Carregar usuário logado
     const savedUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
@@ -255,6 +256,62 @@ class Store {
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
       });
     }
+  }
+
+  syncUsersFromQuotes() {
+    let changed = false;
+    const staticData = getStaticSource();
+    const adminEmail = (staticData.ADMIN_CREDENTIALS.email || '').toLowerCase();
+
+    (this.quotes || []).forEach(q => {
+      const qEmail = (q.clientEmail || '').trim().toLowerCase();
+      if (!qEmail || qEmail === adminEmail) return;
+
+      let existing = this.users.find(u => u && u.email && u.email.toLowerCase() === qEmail);
+      if (!existing) {
+        const newUser = {
+          id: q.clientId && !q.clientId.startsWith('guest_') ? q.clientId : 'user_cli_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+          name: q.clientName || qEmail.split('@')[0],
+          email: qEmail,
+          phone: q.clientPhone || '',
+          company: '',
+          cpfCnpj: '',
+          password: 'cli' + Math.floor(1000 + Math.random() * 9000),
+          role: 'client',
+          avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(q.clientName || qEmail)}`,
+          createdAt: q.createdAt || new Date().toISOString()
+        };
+        this.users.push(newUser);
+        if (q.clientId !== newUser.id) {
+          q.clientId = newUser.id;
+        }
+        changed = true;
+      } else {
+        if (q.clientId && q.clientId.startsWith('guest_')) {
+          q.clientId = existing.id;
+          changed = true;
+        }
+        if (!existing.phone && q.clientPhone) {
+          existing.phone = q.clientPhone;
+          changed = true;
+        }
+      }
+    });
+
+    if (changed) {
+      this.saveUsers();
+      this.saveQuotes();
+    }
+  }
+
+  getQuotesForUser(userOrId) {
+    const userId = typeof userOrId === 'string' ? userOrId : userOrId?.id;
+    const userEmail = typeof userOrId === 'object' ? (userOrId?.email || '').toLowerCase() : '';
+    return (this.quotes || []).filter(q => {
+      if (q.clientId && q.clientId === userId) return true;
+      if (userEmail && q.clientEmail && q.clientEmail.toLowerCase() === userEmail) return true;
+      return false;
+    });
   }
 
   saveUsers() {
@@ -971,12 +1028,47 @@ class Store {
     const quoteNumber = Math.floor(1000 + Math.random() * 9000);
     const quoteId = `COT-${quoteNumber}`;
 
+    const cleanEmail = (data.contactEmail || (this.currentUser ? this.currentUser.email : '') || '').trim().toLowerCase();
+    const cleanName = (data.contactName && data.contactName.trim()) || (this.currentUser ? this.currentUser.name : (cleanEmail ? cleanEmail.split('@')[0] : 'Cliente Visitante'));
+    const cleanPhone = (data.contactPhone && data.contactPhone.trim()) || (this.currentUser ? this.currentUser.phone : '');
+
+    // Se o cliente informou e-mail e ainda não possui cadastro em this.users, cria automaticamente o usuário
+    let clientUser = null;
+    if (this.currentUser && this.currentUser.role === 'client') {
+      clientUser = this.currentUser;
+    } else if (cleanEmail) {
+      clientUser = this.users.find(u => u && u.email && u.email.toLowerCase() === cleanEmail);
+      if (!clientUser) {
+        clientUser = {
+          id: 'user_cli_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+          name: cleanName,
+          email: cleanEmail,
+          phone: cleanPhone,
+          company: '',
+          cpfCnpj: '',
+          password: 'cli' + Math.floor(1000 + Math.random() * 9000),
+          role: 'client',
+          avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(cleanName)}`,
+          createdAt: new Date().toISOString()
+        };
+        this.users.push(clientUser);
+        this.saveUsers();
+      } else {
+        if (!clientUser.phone && cleanPhone) {
+          clientUser.phone = cleanPhone;
+          this.saveUsers();
+        }
+      }
+    }
+
+    const clientId = clientUser ? clientUser.id : (this.currentUser ? this.currentUser.id : 'guest_' + Date.now());
+
     const newQuote = {
       id: quoteId,
-      clientId: this.currentUser ? this.currentUser.id : 'guest_' + Date.now(),
-      clientName: (data.contactName && data.contactName.trim()) || (this.currentUser ? this.currentUser.name : 'Cliente Visitante'),
-      clientEmail: (data.contactEmail && data.contactEmail.trim()) || (this.currentUser ? this.currentUser.email : ''),
-      clientPhone: (data.contactPhone && data.contactPhone.trim()) || (this.currentUser ? this.currentUser.phone : ''),
+      clientId: clientId,
+      clientName: cleanName,
+      clientEmail: cleanEmail,
+      clientPhone: cleanPhone,
       createdAt: new Date().toISOString(),
       modality: data.modality || 'rodoviario',
       dimensions: {
@@ -1289,6 +1381,7 @@ class Store {
   }
 
   getAllUsers() {
+    this.syncUsersFromQuotes();
     const staticData = getStaticSource();
     const adminEmail = (staticData.ADMIN_CREDENTIALS.email || '').toLowerCase();
     return this.users.filter(u => u && (!u.email || u.email.toLowerCase() !== adminEmail));
