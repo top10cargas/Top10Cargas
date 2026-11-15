@@ -1553,8 +1553,8 @@
           <button type="submit" class="w-full py-2.5 bg-wine-900 hover:bg-wine-800 text-yellowbrand-300 font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition border border-wine-950">
             Entrar no Portal
           </button>
-          <div class="text-center mt-2">
-            <button type="button" onclick="app.openForgotPasswordModal()" class="text-xs text-wine-800 hover:underline font-semibold">Esqueceu a senha? Recuperar acesso</button>
+            <button type="button" onclick="app.openForgotPasswordModal()" class="text-xs text-wine-800 hover:underline font-semibold block w-full mb-2">Esqueceu a senha? Recuperar acesso</button>
+            <p class="text-xs text-stone-500">No tem uma conta? <button type="button" onclick="app.switchAuthTab('register')" class="text-wine-800 hover:underline font-bold">Criar conta grtis</button></p>
           </div>
         </form>
 
@@ -1582,7 +1582,7 @@
               <i data-lucide="id-card" class="w-3.5 h-3.5 text-wine-800"></i>
               CPF ou CNPJ
             </label>
-            <input type="text" id="reg-cpf-cnpj" required placeholder="CPF: 000.000.000-00  ou  CNPJ: 00.000.000/0000-00" maxlength="18" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800 font-mono tracking-wide" oninput="app.formatCpfCnpj(this)">
+            <input type="text" id="reg-cpf-cnpj" placeholder="CPF: 000.000.000-00  ou  CNPJ: 00.000.000/0000-00" maxlength="18" class="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs focus:outline-none focus:border-wine-800 font-mono tracking-wide" oninput="app.formatCpfCnpj(this)">
             <p class="text-[10px] text-stone-400 mt-0.5">Pessoa Física (CPF) ou Pessoa Jurídica (CNPJ)</p>
           </div>
           <!-- Foto de Perfil Opcional no Cadastro -->
@@ -1620,6 +1620,7 @@
           <button type="submit" class="w-full py-2.5 bg-wine-900 hover:bg-wine-800 text-yellowbrand-300 font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition border border-wine-950">
             Finalizar Cadastro
           </button>
+          <div class="text-center mt-2"><p class="text-xs text-stone-500">J tem uma conta? <button type="button" onclick="app.switchAuthTab('login')" class="text-wine-800 hover:underline font-bold">Fazer login</button></p></div>
         </form>
       </div>
 
