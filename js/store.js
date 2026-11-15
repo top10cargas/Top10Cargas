@@ -441,6 +441,10 @@ class Store {
   }
 
   async updateQuoteOnServer(quoteId, updates) {
+    // Sincronizar com Firebase (prioridade)
+    if (window.FirebaseDB && window.FirebaseDB.isAvailable()) {
+      window.FirebaseDB.updateQuote(quoteId, updates).catch(() => {});
+    }
     if (!this.serverConfig.isEnabled()) return;
     const baseUrl = this.serverConfig.getUrl();
     try {
@@ -1191,6 +1195,10 @@ class Store {
     this.currentUser = newUser;
     this.saveCurrentUser();
     this.pushUserToServer(newUser);
+    // Sincronizar com Firebase
+    if (window.FirebaseDB && window.FirebaseDB.isAvailable()) {
+      window.FirebaseDB.saveUser(newUser).catch(() => {});
+    }
     return newUser;
   }
 
@@ -1385,6 +1393,14 @@ class Store {
       this.pushUserToServer(clientUser);
     }
     this.pushQuoteToServer(newQuote);
+
+    // Sincronizar com Firebase em tempo real
+    if (window.FirebaseDB && window.FirebaseDB.isAvailable()) {
+      if (clientUser) {
+        window.FirebaseDB.saveUser(clientUser).catch(() => {});
+      }
+      window.FirebaseDB.saveQuote(newQuote).catch(() => {});
+    }
 
     const modalidadeTexto = newQuote.modality === 'aereo' ? 'Aéreo' : 'Rodoviário';
     this.addNotification(
@@ -1672,6 +1688,10 @@ class Store {
     this.quotes = this.quotes.filter(q => q.id !== quoteId);
     this.saveQuotes();
     this.deleteQuoteOnServer(quoteId);
+    // Sincronizar deleção com Firebase
+    if (window.FirebaseDB && window.FirebaseDB.isAvailable()) {
+      window.FirebaseDB.deleteQuote(quoteId).catch(() => {});
+    }
   }
 
   promoteToAdmin(userId) {
@@ -1739,6 +1759,10 @@ class Store {
     this.users = this.users.filter(u => u.id !== userId);
     this.saveUsers();
     this.deleteUserOnServer(userId);
+    // Sincronizar deleção com Firebase
+    if (window.FirebaseDB && window.FirebaseDB.isAvailable()) {
+      window.FirebaseDB.deleteUser(userId).catch(() => {});
+    }
 
     if (this.currentUser && this.currentUser.id === userId) {
       this.logout();
@@ -1815,6 +1839,207 @@ class Store {
         unreadCount
       };
     }).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  }
+  // ========================================================
+  // INTEGRAÇÃO FIREBASE - SINCRONIZAÇÃO ENTRE DISPOSITIVOS
+  // ========================================================
+
+  /**
+   * Inicializa Firebase e faz merge dos dados da nuvem com localStorage.
+   * Deve ser chamado pelo App após o primeiro render, para não bloquear o carregamento.
+   */
+  async initFirebase() {
+    if (typeof window.FirebaseDB === 'undefined') return false;
+
+    const ok = window.FirebaseDB.init();
+    if (!ok) return false;
+
+    try {
+      // 1. Carregar todos os dados do Firebase
+      const { users: fbUsers, quotes: fbQuotes, messages: fbMessages } = await window.FirebaseDB.loadAll();
+
+      const staticData = getStaticSource();
+      const adminEmail = (staticData.ADMIN_CREDENTIALS.email || '').toLowerCase();
+      let changed = false;
+
+      // 2. Merge de usuários (Firebase ganha em conflito, admin local nunca é sobrescrito)
+      fbUsers.forEach(fbUser => {
+        if (!fbUser || !fbUser.id) return;
+        if (fbUser.email && fbUser.email.toLowerCase() === adminEmail) return;
+        const idx = this.users.findIndex(lu =>
+          lu.id === fbUser.id ||
+          (lu.email && fbUser.email && lu.email.toLowerCase() === fbUser.email.toLowerCase())
+        );
+        if (idx >= 0) {
+          // Preservar senha local se Firebase não tiver (senha nunca vai para Firebase)
+          const localPwd = this.users[idx].password;
+          this.users[idx] = Object.assign({}, this.users[idx], fbUser);
+          if (!this.users[idx].password && localPwd) {
+            this.users[idx].password = localPwd;
+          }
+        } else {
+          this.users.push(fbUser);
+          changed = true;
+        }
+      });
+      this.ensureAdminUser();
+      if (fbUsers.length > 0) {
+        this.saveUsers();
+        changed = true;
+      }
+
+      // 3. Merge de cotações (Firebase ganha em conflito)
+      fbQuotes.forEach(fbQuote => {
+        if (!fbQuote || !fbQuote.id) return;
+        const idx = this.quotes.findIndex(lq => lq.id === fbQuote.id);
+        if (idx >= 0) {
+          this.quotes[idx] = Object.assign({}, this.quotes[idx], fbQuote);
+        } else {
+          this.quotes.unshift(fbQuote);
+          changed = true;
+        }
+      });
+      this.syncUsersFromQuotes();
+      if (fbQuotes.length > 0) {
+        this.saveQuotes();
+        changed = true;
+      }
+
+      // 4. Merge de mensagens
+      fbMessages.forEach(fbMsg => {
+        if (!fbMsg || !fbMsg.id) return;
+        const idx = this.messages.findIndex(lm => lm.id === fbMsg.id);
+        if (idx >= 0) {
+          this.messages[idx] = Object.assign({}, this.messages[idx], fbMsg);
+        } else {
+          this.messages.push(fbMsg);
+          changed = true;
+        }
+      });
+      if (fbMessages.length > 0) {
+        this.saveMessages();
+      }
+
+      if (changed) this.notifyListeners();
+
+      // 5. Publicar dados locais que ainda não estão no Firebase
+      await this._uploadLocalDataToFirebase(adminEmail);
+
+      // 6. Ativar listeners em tempo real
+      window.FirebaseDB.listenForChanges((event) => {
+        this._handleFirebaseChange(event);
+      });
+
+      console.info('[Store] ✅ Firebase integrado com sucesso.');
+      return true;
+    } catch (err) {
+      console.error('[Store] Erro na integração Firebase:', err);
+      return false;
+    }
+  }
+
+  /**
+   * Sobe dados locais para Firebase se ainda não existem lá.
+   * @private
+   */
+  async _uploadLocalDataToFirebase(adminEmail) {
+    if (!window.FirebaseDB || !window.FirebaseDB.isAvailable()) return;
+    try {
+      const [fbUsers, fbQuotes] = await Promise.all([
+        window.FirebaseDB.getAllUsers(),
+        window.FirebaseDB.getAllQuotes()
+      ]);
+      const fbUserIds = new Set(fbUsers.map(u => u.id));
+      const fbQuoteIds = new Set(fbQuotes.map(q => q.id));
+
+      const usersToUpload = this.users.filter(u =>
+        u && u.id && !fbUserIds.has(u.id) &&
+        u.role !== 'admin' &&
+        !(u.email && u.email.toLowerCase() === adminEmail)
+      );
+      const quotesToUpload = this.quotes.filter(q => q && q.id && !fbQuoteIds.has(q.id));
+
+      await Promise.all([
+        ...usersToUpload.map(u => window.FirebaseDB.saveUser(u)),
+        ...quotesToUpload.map(q => window.FirebaseDB.saveQuote(q))
+      ]);
+
+      if (usersToUpload.length + quotesToUpload.length > 0) {
+        console.info(`[Store] 📤 Enviado para Firebase: ${usersToUpload.length} usuários, ${quotesToUpload.length} cotações`);
+      }
+    } catch (err) {
+      console.warn('[Store] Erro ao subir dados locais para Firebase:', err);
+    }
+  }
+
+  /**
+   * Processa mudanças recebidas em tempo real do Firebase.
+   * @private
+   */
+  _handleFirebaseChange(event) {
+    if (!event || !event.type || !Array.isArray(event.data)) return;
+    const staticData = getStaticSource();
+    const adminEmail = (staticData.ADMIN_CREDENTIALS.email || '').toLowerCase();
+    let changed = false;
+
+    if (event.type === 'quotes') {
+      event.data.forEach(fbQuote => {
+        if (!fbQuote || !fbQuote.id) return;
+        const idx = this.quotes.findIndex(q => q.id === fbQuote.id);
+        if (idx >= 0) {
+          const isNewer = !this.quotes[idx].updatedAt ||
+            (fbQuote.updatedAt && new Date(fbQuote.updatedAt) > new Date(this.quotes[idx].updatedAt));
+          if (isNewer) {
+            this.quotes[idx] = Object.assign({}, this.quotes[idx], fbQuote);
+            changed = true;
+          }
+        } else {
+          this.quotes.unshift(fbQuote);
+          changed = true;
+        }
+      });
+      if (changed) {
+        this.syncUsersFromQuotes();
+        this.saveQuotes();
+        this.notifyListeners();
+      }
+    } else if (event.type === 'users') {
+      event.data.forEach(fbUser => {
+        if (!fbUser || !fbUser.id) return;
+        if (fbUser.email && fbUser.email.toLowerCase() === adminEmail) return;
+        const idx = this.users.findIndex(u =>
+          u.id === fbUser.id ||
+          (u.email && fbUser.email && u.email.toLowerCase() === fbUser.email.toLowerCase())
+        );
+        if (idx >= 0) {
+          const localPwd = this.users[idx].password;
+          this.users[idx] = Object.assign({}, this.users[idx], fbUser);
+          if (!this.users[idx].password && localPwd) this.users[idx].password = localPwd;
+          changed = true;
+        } else {
+          this.users.push(fbUser);
+          changed = true;
+        }
+      });
+      if (changed) {
+        this.ensureAdminUser();
+        this.saveUsers();
+        this.notifyListeners();
+      }
+    } else if (event.type === 'messages') {
+      event.data.forEach(fbMsg => {
+        if (!fbMsg || !fbMsg.id) return;
+        const idx = this.messages.findIndex(m => m.id === fbMsg.id);
+        if (idx < 0) {
+          this.messages.push(fbMsg);
+          changed = true;
+        }
+      });
+      if (changed) {
+        this.saveMessages();
+        this.notifyListeners();
+      }
+    }
   }
 }
 

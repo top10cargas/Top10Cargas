@@ -56,6 +56,33 @@ class App {
       document.addEventListener('click', () => {
         this.requestNotificationPermission();
       }, { once: true });
+
+      // Inicializar Firebase após primeiro render (não bloqueia o carregamento da página)
+      if (window.logixStore && typeof window.logixStore.initFirebase === 'function') {
+        window.logixStore.initFirebase().then((firebaseOk) => {
+          if (firebaseOk) {
+            // Firebase conectado: registrar callback para re-renderizar quando houver mudanças
+            if (window.FirebaseDB && window.FirebaseDB.isAvailable()) {
+              window.FirebaseDB.listenForChanges((event) => {
+                window.logixStore._handleFirebaseChange(event);
+                // Re-renderizar painel admin se estiver logado como admin
+                const cu = window.logixStore.currentUser;
+                if (cu && cu.role === 'admin') {
+                  this.renderAdminDashboard();
+                }
+              });
+            }
+            // Re-renderizar painel admin com dados atualizados do Firebase
+            const cu = window.logixStore.currentUser;
+            if (cu && cu.role === 'admin') {
+              this.renderAdminDashboard();
+            }
+            console.info('[App] ✅ Firebase inicializado e painel atualizado.');
+          }
+        }).catch((err) => {
+          console.warn('[App] Firebase não disponível, operando em modo offline:', err);
+        });
+      }
     };
 
     if (document.readyState === 'loading') {
