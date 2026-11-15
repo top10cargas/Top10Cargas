@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOGIX BRASIL - Tela 05: Painel do Administrador & Análise de Frete</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased font-sans p-4 sm:p-8">
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Admin Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 text-white p-6 rounded-2xl shadow-xl">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xl border border-amber-500/30">
+          <i data-lucide="shield-check" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl font-bold">Centro Operacional de Logística Nacional</h1>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-400 text-slate-950 uppercase">Gestor Master</span>
+          </div>
+          <p class="text-xs text-slate-400">Análise de cargas rodoviárias e aéreas, envio de propostas em BRL (R$)</p>
+        </div>
+      </div>
+      <button class="px-4 py-2 bg-slate-800 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 flex items-center gap-2">
+        <i data-lucide="download" class="w-4 h-4"></i> Exportar CSV
+      </button>
+    </div>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white p-4 rounded-xl border border-slate-200">
+        <span class="text-xs font-semibold text-slate-500">Pendentes de Análise</span>
+        <p class="text-2xl font-black text-amber-600 mt-1">1</p>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200">
+        <span class="text-xs font-semibold text-slate-500">Propostas Enviadas</span>
+        <p class="text-2xl font-black text-sky-600 mt-1">1</p>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200">
+        <span class="text-xs font-semibold text-slate-500">Serviços Aprovados</span>
+        <p class="text-2xl font-black text-emerald-600 mt-1">1</p>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200">
+        <span class="text-xs font-semibold text-slate-500">Faturamento Aprovado</span>
+        <p class="text-2xl font-black text-slate-900 mt-1">R$ 625,00</p>
+      </div>
+    </div>
+
+    <!-- Card de Análise Técnica -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-amber-100 text-amber-700"><i data-lucide="clipboard-list" class="w-5 h-5"></i></div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono font-bold text-slate-900 text-base">COT-9502</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-800">Aéreo</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">Cotação Sujeita a Análise</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Cliente: <strong>Empresa Logística Sul</strong> • Tel: (41) 99123-4567</p>
+          </div>
+        </div>
+        <button class="px-5 py-2.5 bg-slate-900 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow flex items-center gap-2">
+          <i data-lucide="calculator" class="w-4 h-4 text-amber-400"></i> Formular Proposta em R$
+        </button>
+      </div>
+
+      <div class="grid sm:grid-cols-4 gap-4 text-xs pt-2">
+        <div>
+          <span class="text-slate-400 text-[10px] uppercase font-bold block">Rota de Transporte</span>
+          <p class="font-semibold text-slate-800 mt-0.5">De: Curitiba / PR (CWB)</p>
+          <p class="font-semibold text-slate-800">Para: Fortaleza / CE (FOR)</p>
+        </div>
+        <div>
+          <span class="text-slate-400 text-[10px] uppercase font-bold block">Dados da Carga</span>
+          <p class="font-semibold text-slate-800 mt-0.5">Volumes: <strong class="text-sky-600">3 volumes</strong></p>
+          <p class="text-slate-700">Peso Real: <strong>14.0 kg</strong></p>
+          <p class="text-slate-700">Medidas: 50 x 40 x 30 cm</p>
+        </div>
+        <div>
+          <span class="text-slate-400 text-[10px] uppercase font-bold block">Cubagem & Fator Aéreo</span>
+          <p class="text-slate-700 mt-0.5">Volume Total: <strong>60.0 dm³</strong></p>
+          <p class="text-slate-700">Peso Cubado (Fator 6000): <strong>10.0 kg</strong></p>
+          <p class="text-slate-500 text-[10px]">Valor Declarado: R$ 3.500,00</p>
+        </div>
+        <div>
+          <span class="text-slate-400 text-[10px] uppercase font-bold block">Mercadoria</span>
+          <p class="text-slate-800 mt-0.5">Instrumentos médicos de medição</p>
+          <span class="inline-block mt-1 px-2 py-0.5 bg-red-100 text-red-800 rounded text-[10px] font-bold">Carga Frágil</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script>lucide.createIcons();</script>
+</body>
+</html>
