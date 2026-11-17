@@ -1,13 +1,10 @@
 {
   "hosting": {
-    "public": ".",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**",
-      "server/**",
-      "api/**",
-      "stitch_export/**"
+      "**/node_modules/**"
     ]
   }
 }

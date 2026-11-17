@@ -1517,13 +1517,18 @@
   <!-- MODAL: LOGIN / CADASTRO DE CLIENTE -->
   <!-- ======================================================== -->
   <div id="modal-auth" class="hidden fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-wine-200 overflow-hidden animate-fade-in">
-      <div class="grid grid-cols-2 border-b border-stone-200 text-center font-bold text-xs">
-        <button id="auth-tab-login-btn" onclick="app.switchAuthTab('login')" class="py-4 border-b-2 border-wine-900 text-wine-900 bg-wine-50/50">
-          Acessar Conta
-        </button>
-        <button id="auth-tab-register-btn" onclick="app.switchAuthTab('register')" class="py-4 border-b-2 border-transparent text-stone-500 hover:text-stone-800">
-          Criar Cadastro
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-wine-200 overflow-hidden animate-fade-in relative">
+      <div class="relative border-b border-stone-200 bg-stone-50/50 pr-12">
+        <div class="grid grid-cols-2 text-center font-bold text-xs">
+          <button id="auth-tab-login-btn" onclick="app.switchAuthTab('login')" class="py-4 border-b-2 border-wine-900 text-wine-900 bg-wine-50/50">
+            Acessar Conta
+          </button>
+          <button id="auth-tab-register-btn" onclick="app.switchAuthTab('register')" class="py-4 border-b-2 border-transparent text-stone-500 hover:text-stone-800">
+            Criar Cadastro
+          </button>
+        </div>
+        <button onclick="app.closeAuthModal()" class="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-200/60 rounded-lg transition" title="Fechar janela">
+          <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
@@ -1553,8 +1558,10 @@
           <button type="submit" class="w-full py-2.5 bg-wine-900 hover:bg-wine-800 text-yellowbrand-300 font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition border border-wine-950">
             Entrar no Portal
           </button>
-            <button type="button" onclick="app.openForgotPasswordModal()" class="text-xs text-wine-800 hover:underline font-semibold block w-full mb-2">Esqueceu a senha? Recuperar acesso</button>
-            <p class="text-xs text-stone-500">No tem uma conta? <button type="button" onclick="app.switchAuthTab('register')" class="text-wine-800 hover:underline font-bold">Criar conta grtis</button></p>
+          <div class="text-center pt-1 space-y-2">
+            <button type="button" onclick="app.openForgotPasswordModal()" class="text-xs text-wine-800 hover:underline font-semibold block w-full">Esqueceu a senha? Recuperar acesso</button>
+            <p class="text-xs text-stone-500">Não tem uma conta? <button type="button" onclick="app.switchAuthTab('register')" class="text-wine-800 hover:underline font-bold">Criar conta grátis</button></p>
+            <button type="button" onclick="app.closeAuthModal()" class="text-xs text-stone-400 hover:text-stone-600 transition inline-block pt-1">Fechar janela</button>
           </div>
         </form>
 
@@ -1620,14 +1627,11 @@
           <button type="submit" class="w-full py-2.5 bg-wine-900 hover:bg-wine-800 text-yellowbrand-300 font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition border border-wine-950">
             Finalizar Cadastro
           </button>
-          <div class="text-center mt-2"><p class="text-xs text-stone-500">J tem uma conta? <button type="button" onclick="app.switchAuthTab('login')" class="text-wine-800 hover:underline font-bold">Fazer login</button></p></div>
+          <div class="text-center pt-1 space-y-2">
+            <p class="text-xs text-stone-500">Já tem uma conta? <button type="button" onclick="app.switchAuthTab('login')" class="text-wine-800 hover:underline font-bold">Fazer login</button></p>
+            <button type="button" onclick="app.closeAuthModal()" class="text-xs text-stone-400 hover:text-stone-600 transition inline-block pt-1">Fechar janela</button>
+          </div>
         </form>
-      </div>
-
-      <div class="p-3 bg-stone-50 border-t border-stone-200 text-center">
-        <button onclick="app.closeAuthModal()" class="text-xs text-stone-500 hover:text-stone-800">
-          Fechar Janela
-        </button>
       </div>
     </div>
   </div>
